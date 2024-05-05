@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {MongooseModule} from "@nestjs/mongoose";
 import {ConfigModule} from "@nestjs/config";
+import { RoleModule } from './models/role/role.module';
+import { UsersModule } from './models/users/users.module';
 
 @Module({
   imports: [
@@ -10,7 +11,8 @@ import {ConfigModule} from "@nestjs/config";
       isGlobal: true,
       envFilePath: '.env'
     }),
-    MongooseModule.forRoot(process.env.DATABASE),
+    RoleModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
