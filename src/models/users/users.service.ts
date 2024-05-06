@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { PrismaService } from "../../prisma.service";
+import { RoleService } from "../role/role.service";
+import { UserRoleEnum } from "../role/dto/create-role.dto";
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private prisma: PrismaService, private roleService: RoleService) {
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async createUser(createUserDto: CreateUserDto) {
+    const user = await this.prisma.user.create({
+      data: createUserDto
+    });
+    const role = await this.roleService.getRoleByValue(UserRoleEnum.USER);
+    await this.prisma.userRole.create({
+      data: {
+        user: { connect: { id: user.id } },
+        role: { connect: { id: role.id } }
+      }
+    });
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async getAllUsers() {
+    return await this.prisma.user.findMany({ include: { roles: true } });
   }
 }

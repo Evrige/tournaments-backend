@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
-import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 dotenv.config();
 
@@ -13,12 +13,13 @@ async function bootstrap() {
     .setTitle('Backend MTG Application')
     .setDescription('Documentation for the backend')
     .setVersion('1.0.0')
-    .addTag('Evrige')
+    .addTag('by Evrige')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/docs', app, document);
 
-  await app.listen(PORT, () => { console.log('listening on port ' + PORT)})
+  await app.listen(PORT, () => {
+    console.log('listening on port ' + PORT);
+  });
 }
 bootstrap();
-
