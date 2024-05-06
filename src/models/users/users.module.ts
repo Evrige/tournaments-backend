@@ -7,7 +7,9 @@ import { RoleService } from "../role/role.service";
 @Module({
   controllers: [UsersController],
   providers: [UsersService, PrismaService, RoleService],
-  imports: []
+  imports: [],
+  exports: [UsersService]
+
 })
 
 export class UsersModule {}
