@@ -3,6 +3,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "../../prisma.service";
 import { RoleService } from "../role/role.service";
 import { UserRoleEnum } from "../role/dto/create-role.dto";
+import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -20,11 +21,21 @@ export class UsersService {
         role: { connect: { id: role.id } }
       }
     });
-
     return user;
   }
 
   async getAllUsers() {
     return await this.prisma.user.findMany({ include: { roles: true } });
+  }
+
+  async findUser(email: string) {
+    return await this.prisma.user.findUnique({
+      where: {
+        email
+      },
+      include: {
+        roles: true
+      }
+    });
   }
 }
