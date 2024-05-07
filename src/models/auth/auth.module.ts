@@ -22,7 +22,7 @@ import {JwtStrategy} from "./jwt.strategy";
 		UsersModule
 	],
 	controllers: [AuthController],
-	providers: [AuthService, UsersService, PrismaService, RoleService, LocalStrategy, JwtStrategy, JwtService]
+	providers: [AuthService, UsersService, PrismaService, RoleService, LocalStrategy, JwtStrategy]
 })
 export class AuthModule {
 }
