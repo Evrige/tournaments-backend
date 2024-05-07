@@ -14,18 +14,17 @@ export class UsersController {
 
   @ApiOperation({summary: "Create user"})
   @ApiResponse({status: 200, type: UserDto})
-  // @Role([UserRoleEnum.ADMIN])
-  // @UseGuards(RoleGuard)
+  @Role([UserRoleEnum.ADMIN])
+  @UseGuards(RoleGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }
 
-
   @ApiOperation({summary: "Get all users"})
   @ApiResponse({status: 200, type: [UserDto]})
-  // @Role([UserRoleEnum.ADMIN])
-  // @UseGuards(RoleGuard)
+  @Role([UserRoleEnum.ADMIN])
+  @UseGuards(RoleGuard)
   @Get()
   getAllUsers() {
     return this.usersService.getAllUsers();
