@@ -1,21 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { UserDto } from "../users/dto/user.dto";
 import * as bcrypt from "bcryptjs";
 import { CreateUserDto } from "../users/dto/create-user.dto";
-import { PrismaService } from "../../prisma.service";
-import { ApiProperty } from "@nestjs/swagger";
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService,
-              private prisma: PrismaService,
               private JwtService: JwtService) {
   }
 
   async registration(User: CreateUserDto): Promise<any> {
     const user = await this.usersService.findUser(User.email);
+
 
     if (user) throw new HttpException("User already registered", HttpStatus.BAD_REQUEST);
 
@@ -25,9 +23,20 @@ export class AuthService {
   }
 
   async generateToken(user: UserDto){
-    const payload = { email: user.email, password: user.password };
+    const  { password, ...result } = user;
+
     return {
-      token: this.JwtService.sign(payload),
+      token: this.JwtService.sign(result),
     };
   }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findUser(email);
+    const pass = await bcrypt.compare(password, user.password);
+    if (user && pass) {
+      return user;
+    }
+    return null;
+  }
+
 }
