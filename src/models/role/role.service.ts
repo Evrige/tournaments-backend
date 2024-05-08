@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRoleDto, UserRoleEnum } from "./dto/create-role.dto";
+import { CreateRoleDto } from "./dto/create-role.dto";
 import {PrismaService} from "../../prisma.service";
+import { RoleName } from "@prisma/client";
 
 @Injectable()
 export class RoleService {
@@ -13,7 +14,7 @@ export class RoleService {
     return role;
   }
 
-  async getRoleByValue(value: UserRoleEnum) {
+  async getRoleByValue(value: RoleName) {
     const role = await this.prisma.role.findUnique({
       where: {
         name: value,

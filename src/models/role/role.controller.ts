@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { CreateRoleDto, UserRoleEnum } from "./dto/create-role.dto";
+import { CreateRoleDto } from "./dto/create-role.dto";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RoleDto } from "./dto/role.dto";
+import { RoleName } from "@prisma/client";
 @ApiTags('role')
 @Controller('role')
 export class RoleController {
@@ -20,7 +21,8 @@ export class RoleController {
   @ApiResponse({status: 200, type: [RoleDto]})
   @ApiParam({name: "roleName", description: "Role name(USER, ADMIN...)"})
   @Get("/:roleName")
-  getByValue(@Param('roleName') value: UserRoleEnum) {
+  getByValue(@Param('roleName') value: RoleName) {
     return this.roleService.getRoleByValue(value);
   }
+
 }

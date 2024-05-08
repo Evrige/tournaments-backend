@@ -1,11 +1,13 @@
-import {Controller, Get, Post, Body, Param, UseGuards} from "@nestjs/common";
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Body, Controller, Get, Param, Post, UseGuards, UsePipes } from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UserDto } from "./dto/user.dto";
-import {Role} from "../auth/role.decorator";
-import {UserRoleEnum} from "../role/dto/role.dto";
-import {RoleGuard} from "../auth/role.guard";
+import { Role } from "../auth/role.decorator";
+import { RoleGuard } from "../auth/role.guard";
+import { AddRoleDto } from "./dto/add-role.dto";
+import { BanUserDto } from "./dto/ban-user.dto";
+import { RoleName } from "@prisma/client";
 
 @ApiTags('user')
 @Controller('user')
@@ -14,7 +16,7 @@ export class UsersController {
 
   @ApiOperation({summary: "Create user"})
   @ApiResponse({status: 200, type: UserDto})
-  @Role([UserRoleEnum.ADMIN])
+  @Role([RoleName.ADMIN])
   @UseGuards(RoleGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -23,7 +25,7 @@ export class UsersController {
 
   @ApiOperation({summary: "Get all users"})
   @ApiResponse({status: 200, type: [UserDto]})
-  @Role([UserRoleEnum.ADMIN])
+  @Role([RoleName.ADMIN])
   @UseGuards(RoleGuard)
   @Get()
   getAllUsers() {
@@ -36,5 +38,23 @@ export class UsersController {
   @Get("/:email")
   getByValue(@Param('email') value: string) {
     return this.usersService.findUser(value);
+  }
+
+  @ApiOperation({summary: "Add role to user"})
+  @ApiResponse({status: 200, type: String})
+  @Role([RoleName.ADMIN])
+  @UseGuards(RoleGuard)
+  @Post("/addRole")
+  addRole(@Body() AddRoleDto: AddRoleDto) {
+    return this.usersService.addRole(AddRoleDto);
+  }
+
+  @ApiOperation({summary: "Ban user"})
+  @ApiResponse({status: 200, type: String})
+  @Role([RoleName.ADMIN])
+  @UseGuards(RoleGuard)
+  @Post("/ban")
+  banUser(@Body() BanUserDto: BanUserDto) {
+    return this.usersService.banUser(BanUserDto);
   }
 }

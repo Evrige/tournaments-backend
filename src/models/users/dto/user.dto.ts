@@ -25,6 +25,12 @@ export class UserDto {
 	@ApiProperty({example: "url/user1.jpg", description: "link to profile image"})
 	avatar?: string;
 
+	@ApiProperty({example: "false", description: "User is banned?"})
+	isBanned?: boolean;
+
+	@ApiProperty({example: "using cheats", description: "Reason for ban"})
+	banReason?: string;
+
 	@ApiProperty({example: "USER, ADMIN", description: "Users role"})
 	roles?: Roles[];
 }

@@ -1,12 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from "class-validator";
+import { ErrorMessage } from "../../../exceptions/types.exceptions";
+import { RoleName } from "@prisma/client";
 
 export class CreateRoleDto {
 	@ApiProperty({required: true})
-	readonly name: UserRoleEnum;
-}
-export enum UserRoleEnum {
-	USER = 'USER',
-	ADMIN = 'ADMIN',
-	MANAGER = 'MANAGER',
-	ANALYST = 'ANALYST',
+	@IsString({message: ErrorMessage.STRING})
+	readonly name: RoleName;
 }
