@@ -59,13 +59,29 @@ export class UsersService {
         },
         data: {
           isBanned: true,
-          ban_reason: BanUserDto.banReason
+          banReason: BanUserDto.banReason
         }
       });
     if (!user) {
       throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
     return { message: "Ban success" };
+  }
+
+  async unBanUser(BanUserDto: BanUserDto) {
+    const user = await this.prisma.user.update({
+      where: {
+        id: BanUserDto.userId
+      },
+      data: {
+        isBanned: false,
+        banReason: null
+      }
+    });
+    if (!user) {
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+    return { message: "UnBan success" };
   }
 
   async findUser(email: string) {

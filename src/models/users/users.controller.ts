@@ -57,4 +57,13 @@ export class UsersController {
   banUser(@Body() BanUserDto: BanUserDto) {
     return this.usersService.banUser(BanUserDto);
   }
+
+  @ApiOperation({summary: "Ban user"})
+  @ApiResponse({status: 200, type: String})
+  @Role([RoleName.ADMIN])
+  @UseGuards(RoleGuard)
+  @Post("/unban")
+  unbanUser(@Body() BanUserDto: BanUserDto) {
+    return this.usersService.unBanUser(BanUserDto);
+  }
 }

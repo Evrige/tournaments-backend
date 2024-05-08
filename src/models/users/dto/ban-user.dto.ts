@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsString } from "class-validator";
+import {IsInt, IsOptional, IsString} from "class-validator";
 import { ErrorMessage } from "../../../exceptions/types.exceptions";
 
 export class BanUserDto {
@@ -7,7 +7,8 @@ export class BanUserDto {
   @IsInt({message: ErrorMessage.INT})
   userId: number;
 
-  @ApiProperty({required: true, example: "Using cheats", description: "Reason for ban"})
+  @ApiProperty({example: "Using cheats", description: "Reason for ban"})
   @IsString({message: ErrorMessage.STRING})
-  banReason: string;
+  @IsOptional()
+  banReason?: string;
 }

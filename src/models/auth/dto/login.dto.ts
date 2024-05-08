@@ -10,7 +10,6 @@ export class LoginDto {
 
   @ApiProperty({ required: true, example: "123456789", description: "User password" })
   @IsString({ message: ErrorMessage.STRING })
-  @IsEmail({}, { message: ErrorMessage.EMAIL })
   @Length(6, 16, { message: ErrorMessage.PASSWORD })
   password: string;
 }

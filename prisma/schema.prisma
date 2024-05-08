@@ -21,25 +21,156 @@ enum RoleName {
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  name       String?
-  lastname   String?
-  nickname   String?    @unique
-  age        Int?
-  email      String     @unique
-  password   String
-  avatar     String?
-  isBanned   Boolean?
-  ban_reason String?
-  roles      UserRole[]
+  id        Int        @id @default(autoincrement())
+  name      String?
+  lastname  String?
+  nickname  String?    @unique
+  age       Int?
+  email     String     @unique
+  password  String
+  avatar    String?    @default("./uploads/default-profile-logo.jpg")
+  isBanned  Boolean?   @map("is_banned")
+  banReason String?    @map("ban_reason")
+  createdAt DateTime   @default(now()) @map("created_at")
+  teamId    Int?       @map("team_id")
+  roles     UserRole[]
+
+  ratings  User_Rating[]
+  result   Result[]
+  Team     Team?         @relation(fields: [teamId], references: [id])
+  Analysis Analysis[]
 }
 
 model UserRole {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int  @map("user_id")
   role   Role @relation(fields: [roleId], references: [id])
-  roleId Int
+  roleId Int  @map("role_id")
 
   @@unique([userId, roleId])
+}
+
+model User_Rating {
+  id     Int @id @default(autoincrement())
+  userId Int @map("user_id")
+  points Int @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
+}
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique()
+  Logo      String?  @default("./uploads/default-team-logo.jpg")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user           User[]
+  ratings        Team_Rating[]
+  team_list      Teams_List[]
+  result         Result[]
+  matchesAsTeam1 Match[]       @relation("Team1Relation")
+  matchesAsTeam2 Match[]       @relation("Team2Relation")
+  wins           Match[]       @relation("TeamWinRelation")
+}
+
+model Team_Rating {
+  id     Int @id @default(autoincrement())
+  teamId Int @map("team_id")
+  points Int @default(0)
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@unique([teamId])
+}
+
+model Teams_List {
+  id     Int @id @default(autoincrement())
+  teamId Int @map("team_id")
+  stage  Int
+
+  team Team @relation(fields: [teamId], references: [id])
+}
+
+model Tournament {
+  id        Int            @id @default(autoincrement())
+  prizePool Int            @default(0) @map("prize_pool")
+  type      TournamentType @map("type")
+  teamCount Int            @map("team_count")
+  date      DateTime
+  minRating Int            @map("min_rating")
+  maxRating Int            @map("max_rating")
+  arenaId   Int            @map("arena_id")
+
+  arena   Arens    @relation(fields: [arenaId], references: [id])
+  result  Result[]
+  matches Match[]
+}
+
+enum TournamentType {
+  ONLINE
+  OFFLINE
+}
+
+model Arens {
+  id       Int    @id @default(autoincrement())
+  name     String
+  Location String
+  Capacity Int
+
+  tournament Tournament[]
+}
+
+model Result {
+  id           Int  @id @default(autoincrement())
+  Placment     Int
+  tournamentId Int  @map("tournament_id")
+  userId       Int? @map("user_id")
+  teamId       Int? @map("team_id")
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  user       User?      @relation(fields: [userId], references: [id])
+  team       Team?      @relation(fields: [teamId], references: [id])
+}
+
+model Match {
+  id           Int      @id @default(autoincrement())
+  team1Id      Int
+  team2Id      Int
+  nextMatchId  Int?     @map("next_match_id")
+  teamWinId    Int?     @map("team_win_id")
+  date         DateTime
+  tournamentId Int      @map("tournament_id")
+
+  team1            Team               @relation("Team1Relation", fields: [team1Id], references: [id])
+  team2            Team               @relation("Team2Relation", fields: [team2Id], references: [id])
+  teamWin          Team?              @relation("TeamWinRelation", fields: [teamWinId], references: [id])
+  tournament       Tournament         @relation(fields: [tournamentId], references: [id])
+  analysis         Analysis[]
+  match_statisctic Match_Statisctic[]
+}
+
+model Match_Statisctic {
+  id             Int    @id @default(autoincrement())
+  map            String
+  team1RoundsWon Int    @map("team1_rounds_won")
+  team2RoundsWon Int    @map("team2_rounds_won")
+  matchId        Int    @map("match_id")
+
+  match Match @relation(fields: [matchId], references: [id])
+
+  @@unique([matchId])
+}
+
+model Analysis {
+  id      Int    @id @default(autoincrement())
+  image   String
+  text    String
+  matchId Int    @map("match_id")
+  userId  Int    @map("user_id")
+
+  match Match @relation(fields: [matchId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 }

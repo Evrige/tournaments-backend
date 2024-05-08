@@ -33,7 +33,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Role } from './role.decorator';
 import { Reflector } from '@nestjs/core';
-import { JwtAuthGuard } from './jwt-auth.guard'; // Импортируем JwtAuthGuard
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
