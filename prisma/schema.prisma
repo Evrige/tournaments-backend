@@ -115,15 +115,16 @@ model Teams_List {
 
 model Tournament {
   id        Int            @id @default(autoincrement())
-  prizePool Int            @default(0) @map("prize_pool")
+  name      String
+  prizePool Int?           @default(0) @map("prize_pool")
   type      TournamentType @map("type")
   teamCount Int            @map("team_count")
   date      DateTime
-  minRating Int            @map("min_rating")
-  maxRating Int            @map("max_rating")
-  arenaId   Int            @map("arena_id")
+  minRating Int?           @map("min_rating")
+  maxRating Int?           @map("max_rating")
+  arenaId   Int?           @map("arena_id")
 
-  arena   Arens    @relation(fields: [arenaId], references: [id])
+  arena   Arens?   @relation(fields: [arenaId], references: [id])
   result  Result[]
   matches Match[]
 }
@@ -136,8 +137,8 @@ enum TournamentType {
 model Arens {
   id       Int    @id @default(autoincrement())
   name     String
-  Location String
-  Capacity Int
+  location String
+  capacity Int
 
   tournament Tournament[]
 }

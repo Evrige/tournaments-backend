@@ -43,7 +43,7 @@ export class TeamService {
     }
 	}
 
-	async InviteResponse(InviteResponseDto: InviteResponseDto) {
+	async inviteResponse(InviteResponseDto: InviteResponseDto) {
 		const response = await this.prisma.user_Invites.update({
 			where: { id: InviteResponseDto.id },
 			data: {

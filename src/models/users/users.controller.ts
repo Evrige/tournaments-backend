@@ -73,7 +73,7 @@ export class UsersController {
   @ApiResponse({status: 200, type: String})
   @UseGuards(AuthGuard('jwt'))
   @Put("/leave")
-  LeaveTeam(@Req() request: any) {
-    return this.usersService.LeaveTeam(request.user.id);
+  leaveTeam(@Req() request: any) {
+    return this.usersService.leaveTeam(request.user.id);
   }
 }

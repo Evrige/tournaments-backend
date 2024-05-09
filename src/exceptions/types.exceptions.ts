@@ -2,6 +2,7 @@ export enum ErrorMessage {
   EMAIL="Uncorrected email",
   STRING="Must be a string",
   INT="Must be a number",
+  DATE="Must be a date",
   PASSWORD="Must be at least 6 characters long, maximum length 16",
   LINK="Must be a correct link",
   BOOL="Must be a boolean",

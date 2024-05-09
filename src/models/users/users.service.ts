@@ -84,7 +84,7 @@ export class UsersService {
     return { message: "UnBan success" };
   }
 
-  async LeaveTeam(userId: number) {
+  async leaveTeam(userId: number) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },

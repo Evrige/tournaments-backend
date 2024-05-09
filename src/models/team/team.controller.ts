@@ -41,7 +41,7 @@ export class TeamController {
   @ApiOperation({summary: "Invite response"})
   @ApiResponse({status: 200, type: String})
   @Put("/invites")
-  InviteResponse(@Body() dto: InviteResponseDto) {
-    return this.teamService.InviteResponse(dto);
+  inviteResponse(@Body() dto: InviteResponseDto) {
+    return this.teamService.inviteResponse(dto);
   }
 }

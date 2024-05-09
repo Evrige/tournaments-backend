@@ -10,6 +10,7 @@ import {RoleGuard} from "./models/auth/role.guard";
 import {JwtService} from "@nestjs/jwt";
 import {JwtAuthGuard} from "./models/auth/jwt-auth.guard";
 import { TeamModule } from './models/team/team.module';
+import { TournamentModule } from './models/tournament/tournament.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TeamModule } from './models/team/team.module';
     UsersModule,
     AuthModule,
     TeamModule,
+    TournamentModule,
 
   ],
   controllers: [AppController],
