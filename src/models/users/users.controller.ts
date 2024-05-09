@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, UsePipes } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Req, UseGuards, UsePipes } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -8,6 +8,8 @@ import { RoleGuard } from "../auth/role.guard";
 import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { RoleName } from "@prisma/client";
+import { Request } from 'express';
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('user')
 @Controller('user')
@@ -65,5 +67,13 @@ export class UsersController {
   @Post("/unban")
   unbanUser(@Body() BanUserDto: BanUserDto) {
     return this.usersService.unBanUser(BanUserDto);
+  }
+
+  @ApiOperation({summary: "Leave team"})
+  @ApiResponse({status: 200, type: String})
+  @UseGuards(AuthGuard('jwt'))
+  @Put("/leave")
+  LeaveTeam(@Req() request: any) {
+    return this.usersService.LeaveTeam(request.user.id);
   }
 }

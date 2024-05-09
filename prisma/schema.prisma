@@ -21,24 +21,25 @@ enum RoleName {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String?
   lastname  String?
-  nickname  String?    @unique
+  nickname  String?  @unique
   age       Int?
-  email     String     @unique
+  email     String   @unique
   password  String
-  avatar    String?    @default("./uploads/default-profile-logo.jpg")
-  isBanned  Boolean?   @map("is_banned")
-  banReason String?    @map("ban_reason")
-  createdAt DateTime   @default(now()) @map("created_at")
-  teamId    Int?       @map("team_id")
-  roles     UserRole[]
+  avatar    String?  @default("./uploads/default-profile-logo.jpg")
+  isBanned  Boolean? @map("is_banned")
+  banReason String?  @map("ban_reason")
+  createdAt DateTime @default(now()) @map("created_at")
+  teamId    Int?     @map("team_id")
 
-  ratings  User_Rating[]
-  result   Result[]
-  Team     Team?         @relation(fields: [teamId], references: [id])
-  Analysis Analysis[]
+  roles        UserRole[]
+  ratings      User_Rating[]
+  result       Result[]
+  Team         Team?          @relation(fields: [teamId], references: [id])
+  Analysis     Analysis[]
+  User_Invites User_Invites[]
 }
 
 model UserRole {
@@ -71,9 +72,27 @@ model Team {
   ratings        Team_Rating[]
   team_list      Teams_List[]
   result         Result[]
-  matchesAsTeam1 Match[]       @relation("Team1Relation")
-  matchesAsTeam2 Match[]       @relation("Team2Relation")
-  wins           Match[]       @relation("TeamWinRelation")
+  User_Invites   User_Invites[]
+  matchesAsTeam1 Match[]        @relation("Team1Relation")
+  matchesAsTeam2 Match[]        @relation("Team2Relation")
+  wins           Match[]        @relation("TeamWinRelation")
+}
+
+model User_Invites {
+  id     Int          @id @default(autoincrement())
+  user   User         @relation(fields: [userId], references: [id])
+  userId Int          @map("user_id")
+  teamId Int          @map("team_id")
+  Team   Team         @relation(fields: [teamId], references: [id])
+  status InviteStatus
+
+  @@unique([userId, teamId])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }
 
 model Team_Rating {

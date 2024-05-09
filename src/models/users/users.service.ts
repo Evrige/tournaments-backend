@@ -84,6 +84,27 @@ export class UsersService {
     return { message: "UnBan success" };
   }
 
+  async LeaveTeam(userId: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return { message: "User not found" };
+      }
+
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { teamId: null },
+      });
+
+      return { message: 'Leave team success' };
+    } catch (error) {
+      return { message: 'Have a error with leave team' };
+    }
+  }
+
   async findUser(email: string) {
     return await this.prisma.user.findUnique({
       where: {
