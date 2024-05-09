@@ -8,9 +8,9 @@ datasource db {
 }
 
 model Role {
-  id    Int        @id @default(autoincrement())
-  name  RoleName   @unique
-  users UserRole[]
+  id    Int         @id @default(autoincrement())
+  name  RoleName    @unique
+  users User_Role[]
 }
 
 enum RoleName {
@@ -34,7 +34,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   teamId    Int?     @map("team_id")
 
-  roles        UserRole[]
+  roles        User_Role[]
   ratings      User_Rating[]
   result       Result[]
   Team         Team?          @relation(fields: [teamId], references: [id])
@@ -42,7 +42,7 @@ model User {
   User_Invites User_Invites[]
 }
 
-model UserRole {
+model User_Role {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
   userId Int  @map("user_id")
@@ -114,19 +114,27 @@ model Teams_List {
 }
 
 model Tournament {
-  id        Int            @id @default(autoincrement())
-  name      String
-  prizePool Int?           @default(0) @map("prize_pool")
-  type      TournamentType @map("type")
-  teamCount Int            @map("team_count")
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  prizePool Int?             @default(0) @map("prize_pool")
+  type      TournamentType   @map("type")
+  teamCount Int              @map("team_count")
   date      DateTime
-  minRating Int?           @map("min_rating")
-  maxRating Int?           @map("max_rating")
-  arenaId   Int?           @map("arena_id")
+  minRating Int?             @map("min_rating")
+  maxRating Int?             @map("max_rating")
+  arenaId   Int?             @map("arena_id")
+  status    TournamentStatus
 
   arena   Arens?   @relation(fields: [arenaId], references: [id])
   result  Result[]
   matches Match[]
+}
+
+enum TournamentStatus {
+  PLANNED
+  ONGOING
+  FINISHED
+  CANCELLED
 }
 
 enum TournamentType {
@@ -156,39 +164,32 @@ model Result {
 }
 
 model Match {
-  id           Int      @id @default(autoincrement())
-  team1Id      Int
-  team2Id      Int
-  nextMatchId  Int?     @map("next_match_id")
-  teamWinId    Int?     @map("team_win_id")
-  date         DateTime
-  tournamentId Int      @map("tournament_id")
+  id                  String   @id
+  team1Id             Int?     @map("team1_id")
+  team2Id             Int?     @map("team2_id")
+  nextMatchId         String?  @map("next_match_id")
+  teamWinId           Int?     @map("team_win_id")
+  tournamentRoundText String   @map("tournament_round_text")
+  startTime           DateTime @map("start_time")
+  tournamentId        Int      @map("tournament_id")
+  map                 String?
+  state               String
+  team1RoundsWon      Int?     @map("team1_rounds_won")
+  team2RoundsWon      Int?     @map("team2_rounds_won")
 
-  team1            Team               @relation("Team1Relation", fields: [team1Id], references: [id])
-  team2            Team               @relation("Team2Relation", fields: [team2Id], references: [id])
-  teamWin          Team?              @relation("TeamWinRelation", fields: [teamWinId], references: [id])
-  tournament       Tournament         @relation(fields: [tournamentId], references: [id])
-  analysis         Analysis[]
-  match_statisctic Match_Statisctic[]
-}
+  team1      Team?      @relation("Team1Relation", fields: [team1Id], references: [id])
+  team2      Team?      @relation("Team2Relation", fields: [team2Id], references: [id])
+  teamWin    Team?      @relation("TeamWinRelation", fields: [teamWinId], references: [id])
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  analysis   Analysis[]
 
-model Match_Statisctic {
-  id             Int    @id @default(autoincrement())
-  map            String
-  team1RoundsWon Int    @map("team1_rounds_won")
-  team2RoundsWon Int    @map("team2_rounds_won")
-  matchId        Int    @map("match_id")
-
-  match Match @relation(fields: [matchId], references: [id])
-
-  @@unique([matchId])
 }
 
 model Analysis {
   id      Int    @id @default(autoincrement())
   image   String
   text    String
-  matchId Int    @map("match_id")
+  matchId String @map("match_id")
   userId  Int    @map("user_id")
 
   match Match @relation(fields: [matchId], references: [id])

@@ -1,13 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, Req } from "@nestjs/common";
-import { TournamentService } from './tournament.service';
-import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { UpdateTournamentDto } from './dto/update-tournament.dto';
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "@nestjs/passport";
-import { Role } from "../auth/role.decorator";
-import { RoleName } from "@prisma/client";
-import { RoleGuard } from "../auth/role.guard";
-import { CreateArenaDto } from "./dto/create-arena.dto";
+import {Body, Controller, Get, Post, Put} from "@nestjs/common";
+import {TournamentService} from './tournament.service';
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {CreateArenaDto} from "./dto/create-arena.dto";
+import {TournamentDto} from "./dto/tournament.dto";
 
 @ApiTags("tournament")
 @Controller('tournament')
@@ -23,12 +18,28 @@ export class TournamentController {
     return this.tournamentService.createArena(createArenaDto);
   }
 
-  @ApiOperation({summary: "Create arena"})
+  @ApiOperation({summary: "Create tournament"})
   @ApiResponse({status: 200, type: String})
   // @Role([RoleName.ADMIN])
   // @UseGuards(RoleGuard)
   @Post("/createTournament")
-  createTournament(@Body() CreateTournamentDto: CreateTournamentDto) {
-    return this.tournamentService.createTournament(CreateTournamentDto);
+  createTournament(@Body() TournamentDto: TournamentDto) {
+    return this.tournamentService.createTournament(TournamentDto);
+  }
+
+  @ApiOperation({summary: "Update tournament"})
+  @ApiResponse({status: 200, type: String})
+  // @Role([RoleName.ADMIN])
+  // @UseGuards(RoleGuard)
+  @Put("/updateTournament")
+  updateTournament(@Body() TournamentDto: TournamentDto) {
+    return this.tournamentService.updateTournament(TournamentDto);
+  }
+
+  @ApiOperation({summary: "Get tournament information"})
+  @ApiResponse({status: 200, type: String})
+  @Get()
+  getTournaments() {
+    return this.tournamentService.getTournaments();
   }
 }

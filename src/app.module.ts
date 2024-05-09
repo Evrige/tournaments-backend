@@ -11,6 +11,7 @@ import {JwtService} from "@nestjs/jwt";
 import {JwtAuthGuard} from "./models/auth/jwt-auth.guard";
 import { TeamModule } from './models/team/team.module';
 import { TournamentModule } from './models/tournament/tournament.module';
+import { MatchModule } from './models/match/match.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TournamentModule } from './models/tournament/tournament.module';
     AuthModule,
     TeamModule,
     TournamentModule,
+    MatchModule,
 
   ],
   controllers: [AppController],

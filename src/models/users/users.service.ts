@@ -16,7 +16,7 @@ export class UsersService {
       data: createUserDto
     });
     const role = await this.roleService.getRoleByValue(RoleName.USER);
-    await this.prisma.userRole.create({
+    await this.prisma.user_Role.create({
       data: {
         user: { connect: { id: user.id } },
         role: { connect: { id: role.id } }
@@ -39,7 +39,7 @@ export class UsersService {
       throw new HttpException("Role not found", HttpStatus.NOT_FOUND);
     }
 
-    const updatedUser = await this.prisma.userRole.create({
+    const updatedUser = await this.prisma.user_Role.create({
       data: {
         user: { connect: { id: userId } },
         role: { connect: { id: role.id } }
