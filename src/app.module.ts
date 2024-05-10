@@ -1,17 +1,20 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {Module} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {AppService} from './app.service';
 import {ConfigModule} from "@nestjs/config";
-import { RoleModule } from './models/role/role.module';
-import { UsersModule } from './models/users/users.module';
-import { AuthModule } from './models/auth/auth.module';
-import {APP_GUARD, Reflector} from "@nestjs/core";
+import {RoleModule} from './models/role/role.module';
+import {UsersModule} from './models/users/users.module';
+import {AuthModule} from './models/auth/auth.module';
+import {APP_GUARD} from "@nestjs/core";
 import {RoleGuard} from "./models/auth/role.guard";
 import {JwtService} from "@nestjs/jwt";
 import {JwtAuthGuard} from "./models/auth/jwt-auth.guard";
-import { TeamModule } from './models/team/team.module';
-import { TournamentModule } from './models/tournament/tournament.module';
-import { MatchModule } from './models/match/match.module';
+import {TeamModule} from './models/team/team.module';
+import {TournamentModule} from './models/tournament/tournament.module';
+import {MatchModule} from './models/match/match.module';
+import {RatingModule} from './models/rating/rating.module';
+import {ScheduleModule} from "@nestjs/schedule";
+import {GeneratorModule} from './models/generator/generator.module';
 
 @Module({
   imports: [
@@ -19,12 +22,15 @@ import { MatchModule } from './models/match/match.module';
       isGlobal: true,
       envFilePath: '.env'
     }),
+    ScheduleModule.forRoot(),
     RoleModule,
     UsersModule,
     AuthModule,
     TeamModule,
     TournamentModule,
     MatchModule,
+    RatingModule,
+    GeneratorModule,
 
   ],
   controllers: [AppController],
@@ -38,4 +44,5 @@ import { MatchModule } from './models/match/match.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+}

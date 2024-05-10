@@ -26,7 +26,7 @@ export class AuthService {
     const  { password, ...result } = user;
 
     return {
-      token: this.JwtService.sign(result),
+      accessToken: this.JwtService.sign(result),
     };
   }
 

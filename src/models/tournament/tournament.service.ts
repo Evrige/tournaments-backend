@@ -5,10 +5,17 @@ import {TournamentDto} from "./dto/tournament.dto";
 import {TournamentStatus} from "@prisma/client";
 import {createMatch} from "../../utils/create-match";
 import {UsersService} from "../users/users.service";
+import * as moment from 'moment';
+import {Cron, CronExpression} from "@nestjs/schedule";
+import {MatchService} from "../match/match.service";
+import {fillMatches} from "../../utils/fillMatches";
 
 @Injectable()
 export class TournamentService {
-	constructor(private prisma: PrismaService, private usersService: UsersService) {
+	constructor(private prisma: PrismaService,
+							private usersService: UsersService,
+							private matchService: MatchService
+	) {
 	}
 
 	async createArena(createArenaDto: CreateArenaDto) {
@@ -19,8 +26,13 @@ export class TournamentService {
 	}
 
 	async createTournament(TournamentDto: TournamentDto) {
+		const registrationClose = moment(TournamentDto.date)
+			.subtract(1, 'days')
+			.set({hour: 23, minute: 59, second: 59})
+			.utc()
+			.format();
 		const tournament = await this.prisma.tournament.create({
-			data: TournamentDto
+			data: {...TournamentDto, registrationClosedAt: registrationClose}
 		});
 		const match = createMatch(tournament)
 		const res = await this.prisma.match.createMany({
@@ -50,7 +62,7 @@ export class TournamentService {
 		return tournamentList;
 	}
 
-	async getTournament(id: number): Promise<TournamentDto>{
+	async getTournament(id: number): Promise<TournamentDto> {
 		const tournament = await this.prisma.tournament.findUnique({
 			where: {
 				id
@@ -61,38 +73,147 @@ export class TournamentService {
 
 	async joinTeamToTournament(userId: number, tournamentId: number) {
 		const teamId = (await this.usersService.findUserByid(userId)).teamId;
-		const fullTeam = await this.prisma.user.findMany({
-			where: {
-        teamId: teamId
-      }
-		})
-		if(fullTeam.length != 5){
-			return {message: "Team must have 5 players"}
-		}
+		// const fullTeam = await this.prisma.user.findMany({
+		// 	where: {
+		// 		teamId: teamId
+		// 	}
+		// })
+		// if (fullTeam.length != 5) {
+		// 	return {message: "Team must have 5 players"}
+		// }
 		const team = await this.prisma.team.findUnique({
 			where: {
-        id: teamId
-      }
+				id: teamId
+			}
 		})
 		if (!team) {
-      return {message: "Team not found"}
-    }
+			return {message: "Team not found"}
+		}
 		const alreadyRegister = await this.prisma.teams_List.findFirst({
 			where: {
-        tournamentId: tournamentId,
-        teamId: teamId
-      }
+				tournamentId: tournamentId,
+				teamId: teamId
+			}
 		})
 		if (alreadyRegister) {
 			return {message: "Team already registered"}
 		}
+		const tournament = await this.getTournament(tournamentId)
+		if (new Date(tournament.registrationClosedAt).getTime() < new Date().getTime()) return {message: "Registration closed"}
 		// проверка по рейтингу
 		const result = await this.prisma.teams_List.create({
 			data: {
-        tournamentId: tournamentId,
-        teamId: teamId,
+				tournamentId: tournamentId,
+				teamId: teamId,
 				stage: 1,
-				placement: (await this.getTournament(tournamentId)).teamCount
+				placement: tournament.teamCount
+			}
+		})
+		if (!result) return {message: "Error registration"}
+		return {message: "Registration successfully"}
+	}
+
+	async leaveTeamFromTournament(userId: number, tournamentId: number) {
+		const isTournamentStarted = await this.getTournament(tournamentId)
+		if (isTournamentStarted.registrationClosedAt.getTime() < new Date().getTime()) {
+			return {message: "Tournament started"}
+		}
+		const teamId = (await this.usersService.findUserByid(userId)).teamId;
+		const team = await this.prisma.team.findUnique({
+			where: {
+				id: teamId
+			}
+		})
+		if (!team) {
+			return {message: "Team not found"}
+		}
+		const alreadyRegister = await this.prisma.teams_List.findFirst({
+			where: {
+				tournamentId: tournamentId,
+				teamId: teamId
+			}
+		})
+		if (!alreadyRegister) {
+			return {message: "Team not registered"}
+		}
+		const result = await this.prisma.teams_List.delete({
+			where: {
+				id: alreadyRegister.id
+			}
+		})
+		if (!result) return {message: "Error registration"}
+		return {message: "Registration successfully"}
+	}
+
+
+	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+	async checkClosedRegistrations() {
+		const currentDateTime = new Date();
+		const tournaments = await this.prisma.tournament.findMany({
+			where: {
+				registrationClosedAt: {
+					lte: currentDateTime
+				}
+			}
+		});
+
+		for (const tournament of tournaments) {
+			await this.runScriptForTournament(tournament);
+		}
+	}
+
+	async handleStartTournament(tournamentId: number){
+		const tournament = await this.getTournament(tournamentId);
+		await this.runScriptForTournament(tournament);
+	}
+
+	async runScriptForTournament(tournament: any) {
+		let teams = await this.prisma.teams_List.findMany({
+			where: {
+				tournamentId: tournament.id
+			}
+		})
+		if (tournament.teamCount / 2 > teams.length) {
+			await this.prisma.tournament.update({
+				where: {
+					id: tournament.id
+				},
+				data: {
+					status: TournamentStatus.CANCELLED
+				}
+			})
+			await this.prisma.teams_List.deleteMany({
+				where: {
+					tournamentId: tournament.id
+				}
+			})
+			return {message: "Tournament cancelled"}
+		}
+		const matches = await this.matchService.getMatchesByTournamentId(tournament.id)
+		const newMatches = fillMatches(matches, teams)
+		for (const match of newMatches) {
+			if(+match.tournamentRoundText === 1){
+				await this.prisma.match.update({
+					where: {
+						id: match.id
+					},
+					data: {
+						team1: {
+							connect: { id: match.team1Id }
+						},
+						team2: {
+							connect: { id: match.team2Id }
+						}
+					}
+				});
+			}
+		}
+		await this.prisma.tournament.update({
+			where: {
+        id: tournament.id
+      },
+      data: {
+        status: TournamentStatus.ONGOING
       }
 		})
 	}

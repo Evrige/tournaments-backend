@@ -13,8 +13,8 @@ export class RoleController {
 
   @ApiOperation({summary: "Create role"})
   @ApiResponse({status: 200, type: RoleDto})
-  @Role([RoleName.ADMIN])
-  @UseGuards(RoleGuard)
+  // @Role([RoleName.ADMIN])
+  // @UseGuards(RoleGuard)
   @Post()
   create(@Body() dto: CreateRoleDto){
     return this.roleService.createRole(dto);

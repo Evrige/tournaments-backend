@@ -30,6 +30,13 @@ export class AuthController {
 		return this.authService.generateToken(req.user);
 	}
 
+	@ApiOperation({summary: "Registration"})
+	@ApiResponse({status: 200, type: UserDto})
+	@Post("/registration")
+	refreshToken(@Body() createUserDto: CreateUserDto) {
+		return this.authService.registration(createUserDto);
+	}
+
 	@UseGuards(JwtAuthGuard)
 	@Get('/profile')
 	getProfile(@Request() req) {

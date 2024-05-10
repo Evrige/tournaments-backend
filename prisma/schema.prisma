@@ -65,7 +65,7 @@ model User_Rating {
 model Team {
   id        Int      @id @default(autoincrement())
   name      String   @unique()
-  Logo      String?  @default("./uploads/default-team-logo.jpg")
+  logo      String?  @default("./uploads/default-team-logo.jpg")
   createdAt DateTime @default(now()) @map("created_at")
 
   user           User[]
@@ -106,27 +106,28 @@ model Team_Rating {
 }
 
 model Teams_List {
-  id            Int @id @default(autoincrement())
-  teamId        Int @map("team_id")
+  id           Int @id @default(autoincrement())
+  teamId       Int @map("team_id")
   tournamentId Int @map("tournament_id")
-  stage         Int
-  placement     Int
+  stage        Int
+  placement    Int
 
   team        Team       @relation(fields: [teamId], references: [id])
   tournamnent Tournament @relation(fields: [tournamentId], references: [id])
 }
 
 model Tournament {
-  id        Int              @id @default(autoincrement())
-  name      String           @unique
-  prizePool Int?             @default(0) @map("prize_pool")
-  type      TournamentType   @map("type")
-  teamCount Int              @map("team_count")
-  date      DateTime
-  minRating Int?             @map("min_rating")
-  maxRating Int?             @map("max_rating")
-  arenaId   Int?             @map("arena_id")
-  status    TournamentStatus
+  id                   Int              @id @default(autoincrement())
+  name                 String           @unique
+  prizePool            Int?             @default(0) @map("prize_pool")
+  type                 TournamentType   @map("type")
+  teamCount            Int              @map("team_count")
+  date                 DateTime
+  minRating            Int?             @map("min_rating")
+  maxRating            Int?             @map("max_rating")
+  arenaId              Int?             @map("arena_id")
+  status               TournamentStatus
+  registrationClosedAt DateTime         @map("registration_closed_at")
 
   arena     Arens?       @relation(fields: [arenaId], references: [id])
   result    Result[]

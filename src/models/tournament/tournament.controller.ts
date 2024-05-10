@@ -53,4 +53,24 @@ export class TournamentController {
   joinTeamToTournament(@Param("id") idTournament: number, @Req() request: any) {
     return this.tournamentService.joinTeamToTournament(request.user.id, +idTournament);
   }
+
+  @ApiOperation({summary: "Leave team from tournament"})
+  @ApiResponse({status: 200, type: String})
+  // @Role([RoleName.MANAGER])
+  // @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post("/leaveFromTournament/:id")
+  leaveTeamFromTournament(@Param("id") idTournament: number, @Req() request: any) {
+    return this.tournamentService.leaveTeamFromTournament(request.user.id, +idTournament);
+  }
+
+  @ApiOperation({summary: "Handle start tournament"})
+  @ApiResponse({status: 200, type: String})
+  // @Role([RoleName.MANAGER])
+  // @UseGuards(RoleGuard)
+  // @UseGuards(AuthGuard('jwt'))
+  @Get("/handleStartTournament/:id")
+  handleStartTournament(@Param("id") id: number) {
+    return this.tournamentService.handleStartTournament(+id);
+  }
 }

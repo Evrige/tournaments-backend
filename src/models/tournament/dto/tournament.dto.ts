@@ -1,5 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsDateString, IsInt, IsOptional, IsString} from "class-validator";
+import {IsBoolean, IsDateString, IsInt, IsOptional, IsString} from "class-validator";
 import {ErrorMessage} from "../../../exceptions/types.exceptions";
 import {TournamentStatus, TournamentType} from "@prisma/client";
 
@@ -48,4 +48,9 @@ export class TournamentDto {
   @ApiProperty({required: true})
   @IsString({message: ErrorMessage.STRING})
   status: TournamentStatus;
+
+  @ApiProperty({required: true})
+  @IsOptional()
+  @IsDateString({}, {message: ErrorMessage.DATE})
+  registrationClosedAt: Date;
 }
