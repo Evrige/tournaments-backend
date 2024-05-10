@@ -106,11 +106,14 @@ model Team_Rating {
 }
 
 model Teams_List {
-  id     Int @id @default(autoincrement())
-  teamId Int @map("team_id")
-  stage  Int
+  id            Int @id @default(autoincrement())
+  teamId        Int @map("team_id")
+  tournamentId Int @map("tournament_id")
+  stage         Int
+  placement     Int
 
-  team Team @relation(fields: [teamId], references: [id])
+  team        Team       @relation(fields: [teamId], references: [id])
+  tournamnent Tournament @relation(fields: [tournamentId], references: [id])
 }
 
 model Tournament {
@@ -125,9 +128,10 @@ model Tournament {
   arenaId   Int?             @map("arena_id")
   status    TournamentStatus
 
-  arena   Arens?   @relation(fields: [arenaId], references: [id])
-  result  Result[]
-  matches Match[]
+  arena     Arens?       @relation(fields: [arenaId], references: [id])
+  result    Result[]
+  matches   Match[]
+  team_list Teams_List[]
 }
 
 enum TournamentStatus {
@@ -182,7 +186,6 @@ model Match {
   teamWin    Team?      @relation("TeamWinRelation", fields: [teamWinId], references: [id])
   tournament Tournament @relation(fields: [tournamentId], references: [id])
   analysis   Analysis[]
-
 }
 
 model Analysis {

@@ -119,4 +119,19 @@ export class UsersService {
       }
     });
   }
+
+  async findUserByid(userId: number) {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId
+      },
+      include: {
+        roles: {
+          select: {
+            role: true
+          }
+        }
+      }
+    });
+  }
 }

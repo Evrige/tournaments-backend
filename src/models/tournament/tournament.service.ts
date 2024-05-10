@@ -4,10 +4,11 @@ import {CreateArenaDto} from "./dto/create-arena.dto";
 import {TournamentDto} from "./dto/tournament.dto";
 import {TournamentStatus} from "@prisma/client";
 import {createMatch} from "../../utils/create-match";
+import {UsersService} from "../users/users.service";
 
 @Injectable()
 export class TournamentService {
-	constructor(private prisma: PrismaService) {
+	constructor(private prisma: PrismaService, private usersService: UsersService) {
 	}
 
 	async createArena(createArenaDto: CreateArenaDto) {
@@ -49,5 +50,50 @@ export class TournamentService {
 		return tournamentList;
 	}
 
+	async getTournament(id: number): Promise<TournamentDto>{
+		const tournament = await this.prisma.tournament.findUnique({
+			where: {
+				id
+			}
+		});
+		return tournament;
+	}
 
+	async joinTeamToTournament(userId: number, tournamentId: number) {
+		const teamId = (await this.usersService.findUserByid(userId)).teamId;
+		const fullTeam = await this.prisma.user.findMany({
+			where: {
+        teamId: teamId
+      }
+		})
+		if(fullTeam.length != 5){
+			return {message: "Team must have 5 players"}
+		}
+		const team = await this.prisma.team.findUnique({
+			where: {
+        id: teamId
+      }
+		})
+		if (!team) {
+      return {message: "Team not found"}
+    }
+		const alreadyRegister = await this.prisma.teams_List.findFirst({
+			where: {
+        tournamentId: tournamentId,
+        teamId: teamId
+      }
+		})
+		if (alreadyRegister) {
+			return {message: "Team already registered"}
+		}
+		// проверка по рейтингу
+		const result = await this.prisma.teams_List.create({
+			data: {
+        tournamentId: tournamentId,
+        teamId: teamId,
+				stage: 1,
+				placement: (await this.getTournament(tournamentId)).teamCount
+      }
+		})
+	}
 }

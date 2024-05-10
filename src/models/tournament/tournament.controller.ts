@@ -1,8 +1,9 @@
-import {Body, Controller, Get, Post, Put} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from "@nestjs/common";
 import {TournamentService} from './tournament.service';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateArenaDto} from "./dto/create-arena.dto";
 import {TournamentDto} from "./dto/tournament.dto";
+import {AuthGuard} from "@nestjs/passport";
 
 @ApiTags("tournament")
 @Controller('tournament')
@@ -41,5 +42,15 @@ export class TournamentController {
   @Get()
   getTournaments() {
     return this.tournamentService.getTournaments();
+  }
+
+  @ApiOperation({summary: "Join team to tournament"})
+  @ApiResponse({status: 200, type: String})
+  // @Role([RoleName.MANAGER])
+  // @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post("/joinToTournament/:id")
+  joinTeamToTournament(@Param("id") idTournament: number, @Req() request: any) {
+    return this.tournamentService.joinTeamToTournament(request.user.id, +idTournament);
   }
 }
