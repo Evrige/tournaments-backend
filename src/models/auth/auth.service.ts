@@ -23,10 +23,8 @@ export class AuthService {
   }
 
   async generateToken(user: UserDto){
-    const  { password, ...result } = user;
-
     return {
-      accessToken: this.JwtService.sign(result),
+      accessToken: this.JwtService.sign({nickname: user.nickname, userId:user.id}),
     };
   }
 

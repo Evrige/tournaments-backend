@@ -1,9 +1,9 @@
-import {NestFactory, Reflector} from '@nestjs/core';
-import { AppModule } from './app.module';
+import {NestFactory} from '@nestjs/core';
+import {AppModule} from './app.module';
 import * as dotenv from 'dotenv';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from "./pipes/validation.pipes";
-import {RoleGuard} from "./models/auth/role.guard";
+import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
+import {ValidationPipe} from "./pipes/validation.pipes";
+import * as cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -21,7 +21,11 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document);
 
   app.useGlobalPipes(new ValidationPipe())
-
+  app.use(cookieParser());
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  });
   await app.listen(PORT, () => {
     console.log('listening on port ' + PORT);
   });
