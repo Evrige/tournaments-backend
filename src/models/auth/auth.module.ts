@@ -1,14 +1,14 @@
-import {Module} from "@nestjs/common";
-import {AuthService} from "./auth.service";
-import {AuthController} from "./auth.controller";
-import {UsersService} from "../users/users.service";
-import {PrismaService} from "../../prisma.service";
-import {RoleService} from "../role/role.service";
-import {JwtModule, JwtService} from "@nestjs/jwt";
-import {PassportModule} from "@nestjs/passport";
-import {LocalStrategy} from "./local.strategy";
-import {UsersModule} from "../users/users.module";
-import {JwtStrategy} from "./jwt.strategy";
+import { Module } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { AuthController } from "./auth.controller";
+import { UsersService } from "../users/users.service";
+import { PrismaService } from "../../prisma.service";
+import { RoleService } from "../role/role.service";
+import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
+import { LocalStrategy } from "./local.strategy";
+import { UsersModule } from "../users/users.module";
+import { JwtStrategy } from "./jwt.strategy";
 
 @Module({
 	imports: [
@@ -19,10 +19,16 @@ import {JwtStrategy} from "./jwt.strategy";
 			},
 		}),
 		PassportModule,
-		UsersModule
+		UsersModule,
 	],
 	controllers: [AuthController],
-	providers: [AuthService, UsersService, PrismaService, RoleService, LocalStrategy, JwtStrategy]
+	providers: [
+		AuthService,
+		UsersService,
+		PrismaService,
+		RoleService,
+		LocalStrategy,
+		JwtStrategy,
+	],
 })
-export class AuthModule {
-}
+export class AuthModule {}
