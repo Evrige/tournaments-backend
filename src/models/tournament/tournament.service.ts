@@ -1,53 +1,124 @@
-import {Injectable} from '@nestjs/common';
-import {PrismaService} from "../../prisma.service";
-import {CreateArenaDto} from "./dto/create-arena.dto";
-import {TournamentDto} from "./dto/tournament.dto";
-import {TournamentStatus} from "@prisma/client";
-import {createMatch} from "../../utils/create-match";
-import {UsersService} from "../users/users.service";
-import * as moment from 'moment';
-import {Cron, CronExpression} from "@nestjs/schedule";
-import {MatchService} from "../match/match.service";
-import {fillMatches} from "../../utils/fillMatches";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../prisma.service";
+import { CreateArenaDto } from "./dto/create-arena.dto";
+import { TournamentDto } from "./dto/tournament.dto";
+import { TournamentStatus } from "@prisma/client";
+import { createMatch } from "../../utils/create-match";
+import { UsersService } from "../users/users.service";
+import * as moment from "moment";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { MatchService } from "../match/match.service";
+import { fillMatches } from "../../utils/fillMatches";
+import { ratingCalc } from "../../utils/rating-calc";
 
 @Injectable()
 export class TournamentService {
-	constructor(private prisma: PrismaService,
-							private usersService: UsersService,
-							private matchService: MatchService
-	) {
-	}
+	constructor(
+		private prisma: PrismaService,
+		private usersService: UsersService,
+		private matchService: MatchService,
+	) {}
 
 	async createArena(createArenaDto: CreateArenaDto) {
 		const arena = await this.prisma.arens.create({
-			data: createArenaDto
+			data: createArenaDto,
 		});
 		return arena;
 	}
 
 	async createTournament(TournamentDto: TournamentDto) {
 		const registrationClose = moment(TournamentDto.date)
-			.subtract(1, 'days')
-			.set({hour: 23, minute: 59, second: 59})
+			.subtract(1, "days")
+			.set({ hour: 23, minute: 59, second: 59 })
 			.utc()
 			.format();
 		const tournament = await this.prisma.tournament.create({
-			data: {...TournamentDto, registrationClosedAt: registrationClose}
+			data: { ...TournamentDto, registrationClosedAt: registrationClose },
 		});
-		const match = createMatch(tournament)
+		const match = createMatch(tournament);
 		const res = await this.prisma.match.createMany({
-			data: match
-		})
-		if (res) return {message: "All good"}
+			data: match,
+		});
+		if (res) return { message: "All good" };
 	}
 
 	async updateTournament(TournamentDto: TournamentDto) {
 		const tournament = await this.prisma.tournament.update({
 			where: {
-				id: TournamentDto.id
+				id: TournamentDto.id,
 			},
-			data: TournamentDto
+			data: TournamentDto,
 		});
+		return tournament;
+	}
+
+	async closeTournament(tournamentId: number) {
+		const tournament = await this.prisma.tournament.update({
+			where: {
+				id: tournamentId,
+			},
+			data: {
+				status: TournamentStatus.FINISHED,
+			},
+		});
+		const teams = await this.prisma.teams_List.findMany({
+			where: {
+				tournamentId: tournamentId,
+			},
+		});
+		for (const team of teams) {
+			await this.prisma.result.create({
+				data: {
+					teamId: team.teamId,
+					tournamentId: tournamentId,
+					placement: team.placement,
+				},
+			});
+			const tournament = await this.getTournament(tournamentId);
+			const points = ratingCalc(tournament, team);
+			const ratings = await this.prisma.team_Rating.upsert({
+				where: {
+					teamId: team.teamId,
+				},
+				update: {
+					points: {
+						increment: points,
+					},
+				},
+				create: {
+					teamId: team.teamId,
+					points,
+				},
+			});
+			const teamUsers = await this.prisma.user.findMany({
+				where: {
+					teamId: team.id
+				}
+			})
+			for (const user of teamUsers) {
+				await this.prisma.result.create({
+					data: {
+						userId: user.id,
+						tournamentId: tournamentId,
+						placement: team.placement,
+					},
+				});
+				await this.prisma.user_Rating.upsert({
+					where: {
+						userId: user.id,
+					},
+					update: {
+						points: {
+							increment: points,
+						},
+					},
+					create: {
+						userId: user.id,
+						points,
+					},
+				});
+			}
+		}
 		return tournament;
 	}
 
@@ -55,9 +126,9 @@ export class TournamentService {
 		const tournamentList = await this.prisma.tournament.findMany({
 			where: {
 				status: {
-					notIn: [TournamentStatus.FINISHED, TournamentStatus.CANCELLED]
-				}
-			}
+					notIn: [TournamentStatus.FINISHED, TournamentStatus.CANCELLED],
+				},
+			},
 		});
 		return tournamentList;
 	}
@@ -65,8 +136,8 @@ export class TournamentService {
 	async getTournament(id: number): Promise<TournamentDto> {
 		const tournament = await this.prisma.tournament.findUnique({
 			where: {
-				id
-			}
+				id,
+			},
 		});
 		return tournament;
 	}
@@ -83,68 +154,79 @@ export class TournamentService {
 		// }
 		const team = await this.prisma.team.findUnique({
 			where: {
-				id: teamId
-			}
-		})
+				id: teamId,
+			},
+		});
 		if (!team) {
-			return {message: "Team not found"}
+			return { message: "Team not found" };
 		}
 		const alreadyRegister = await this.prisma.teams_List.findFirst({
 			where: {
 				tournamentId: tournamentId,
-				teamId: teamId
+				teamId: teamId,
+			},
+		});
+		if (alreadyRegister) {
+			return { message: "Team already registered" };
+		}
+		const tournament = await this.getTournament(tournamentId);
+		if (
+			new Date(tournament.registrationClosedAt).getTime() < new Date().getTime()
+		)
+			return { message: "Registration closed" };
+		const teamRating = await this.prisma.team_Rating.findUnique({
+			where: {
+				teamId: team.id
 			}
 		})
-		if (alreadyRegister) {
-			return {message: "Team already registered"}
+		if (!teamRating && tournament.minRating > teamRating.points || teamRating.points > tournament.maxRating){
+			return { message: "Don't pass the requirements" };
 		}
-		const tournament = await this.getTournament(tournamentId)
-		if (new Date(tournament.registrationClosedAt).getTime() < new Date().getTime()) return {message: "Registration closed"}
-		// проверка по рейтингу
 		const result = await this.prisma.teams_List.create({
 			data: {
 				tournamentId: tournamentId,
 				teamId: teamId,
 				stage: 1,
-				placement: tournament.teamCount
-			}
-		})
-		if (!result) return {message: "Error registration"}
-		return {message: "Registration successfully"}
+				placement: tournament.teamCount,
+			},
+		});
+		if (!result) return { message: "Error registration" };
+		return { message: "Registration successfully" };
 	}
 
 	async leaveTeamFromTournament(userId: number, tournamentId: number) {
-		const isTournamentStarted = await this.getTournament(tournamentId)
-		if (isTournamentStarted.registrationClosedAt.getTime() < new Date().getTime()) {
-			return {message: "Tournament started"}
+		const isTournamentStarted = await this.getTournament(tournamentId);
+		if (
+			isTournamentStarted.registrationClosedAt.getTime() < new Date().getTime()
+		) {
+			return { message: "Tournament started" };
 		}
 		const teamId = (await this.usersService.findUserByid(userId)).teamId;
 		const team = await this.prisma.team.findUnique({
 			where: {
-				id: teamId
-			}
-		})
+				id: teamId,
+			},
+		});
 		if (!team) {
-			return {message: "Team not found"}
+			return { message: "Team not found" };
 		}
 		const alreadyRegister = await this.prisma.teams_List.findFirst({
 			where: {
 				tournamentId: tournamentId,
-				teamId: teamId
-			}
-		})
+				teamId: teamId,
+			},
+		});
 		if (!alreadyRegister) {
-			return {message: "Team not registered"}
+			return { message: "Team not registered" };
 		}
 		const result = await this.prisma.teams_List.delete({
 			where: {
-				id: alreadyRegister.id
-			}
-		})
-		if (!result) return {message: "Error registration"}
-		return {message: "Registration successfully"}
+				id: alreadyRegister.id,
+			},
+		});
+		if (!result) return { message: "Error registration" };
+		return { message: "Registration successfully" };
 	}
-
 
 	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
 	async checkClosedRegistrations() {
@@ -152,9 +234,9 @@ export class TournamentService {
 		const tournaments = await this.prisma.tournament.findMany({
 			where: {
 				registrationClosedAt: {
-					lte: currentDateTime
-				}
-			}
+					lte: currentDateTime,
+				},
+			},
 		});
 
 		for (const tournament of tournaments) {
@@ -162,59 +244,61 @@ export class TournamentService {
 		}
 	}
 
-	async handleStartTournament(tournamentId: number){
+	async handleStartTournament(tournamentId: number) {
 		const tournament = await this.getTournament(tournamentId);
 		await this.runScriptForTournament(tournament);
 	}
 
 	async runScriptForTournament(tournament: any) {
-		let teams = await this.prisma.teams_List.findMany({
+		const teams = await this.prisma.teams_List.findMany({
 			where: {
-				tournamentId: tournament.id
-			}
-		})
+				tournamentId: tournament.id,
+			},
+		});
 		if (tournament.teamCount / 2 > teams.length) {
 			await this.prisma.tournament.update({
 				where: {
-					id: tournament.id
+					id: tournament.id,
 				},
 				data: {
-					status: TournamentStatus.CANCELLED
-				}
-			})
+					status: TournamentStatus.CANCELLED,
+				},
+			});
 			await this.prisma.teams_List.deleteMany({
 				where: {
-					tournamentId: tournament.id
-				}
-			})
-			return {message: "Tournament cancelled"}
+					tournamentId: tournament.id,
+				},
+			});
+			return { message: "Tournament cancelled" };
 		}
-		const matches = await this.matchService.getMatchesByTournamentId(tournament.id)
-		const newMatches = fillMatches(matches, teams)
+		const matches = await this.matchService.getMatchesByTournamentId(
+			tournament.id,
+		);
+		const newMatches = fillMatches(matches, teams);
 		for (const match of newMatches) {
-			if(+match.tournamentRoundText === 1){
+			if (+match.tournamentRoundText === 1) {
 				await this.prisma.match.update({
 					where: {
-						id: match.id
+						id: match.id,
 					},
 					data: {
 						team1: {
-							connect: { id: match.team1Id }
+							connect: { id: match.team1Id },
 						},
 						team2: {
-							connect: { id: match.team2Id }
-						}
-					}
+							connect: { id: match.team2Id },
+						},
+					},
 				});
 			}
 		}
 		await this.prisma.tournament.update({
 			where: {
-        id: tournament.id
-      },
-      data: {
-        status: TournamentStatus.ONGOING
-      }
-		})
+				id: tournament.id,
+			},
+			data: {
+				status: TournamentStatus.ONGOING,
+			},
+		});
 	}
 }

@@ -55,7 +55,7 @@ model User_Role {
 model User_Rating {
   id     Int @id @default(autoincrement())
   userId Int @map("user_id")
-  points Int @default(0)
+  points Int @default(dbgenerated("LEAST(2000, GREATEST(0))"))
 
   user User @relation(fields: [userId], references: [id])
 
@@ -98,7 +98,7 @@ enum InviteStatus {
 model Team_Rating {
   id     Int @id @default(autoincrement())
   teamId Int @map("team_id")
-  points Int @default(0)
+  points Int @default(dbgenerated("LEAST(2000, GREATEST(0))"))
 
   team Team @relation(fields: [teamId], references: [id])
 
@@ -158,7 +158,7 @@ model Arens {
 
 model Result {
   id           Int  @id @default(autoincrement())
-  Placment     Int
+  placement    Int
   tournamentId Int  @map("tournament_id")
   userId       Int? @map("user_id")
   teamId       Int? @map("team_id")

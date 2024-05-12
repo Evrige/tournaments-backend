@@ -1,76 +1,105 @@
-import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from "@nestjs/common";
-import {TournamentService} from './tournament.service';
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateArenaDto} from "./dto/create-arena.dto";
-import {TournamentDto} from "./dto/tournament.dto";
-import {AuthGuard} from "@nestjs/passport";
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	Post,
+	Put,
+	Req,
+	UseGuards,
+} from "@nestjs/common";
+import { TournamentService } from "./tournament.service";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CreateArenaDto } from "./dto/create-arena.dto";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { TournamentDto } from "./dto/tournament.dto";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("tournament")
-@Controller('tournament')
+@Controller("tournament")
 export class TournamentController {
-  constructor(private readonly tournamentService: TournamentService) {}
+	constructor(private readonly tournamentService: TournamentService) {}
 
-  @ApiOperation({summary: "Create arena"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.ADMIN])
-  // @UseGuards(RoleGuard)
-  @Post("/createArena")
-  createArena(@Body() createArenaDto: CreateArenaDto) {
-    return this.tournamentService.createArena(createArenaDto);
-  }
+	@ApiOperation({ summary: "Create arena" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.ADMIN])
+	// @UseGuards(RoleGuard)
+	@Post("/createArena")
+	createArena(@Body() createArenaDto: CreateArenaDto) {
+		return this.tournamentService.createArena(createArenaDto);
+	}
 
-  @ApiOperation({summary: "Create tournament"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.ADMIN])
-  // @UseGuards(RoleGuard)
-  @Post("/createTournament")
-  createTournament(@Body() TournamentDto: TournamentDto) {
-    return this.tournamentService.createTournament(TournamentDto);
-  }
+	@ApiOperation({ summary: "Create tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.ADMIN])
+	// @UseGuards(RoleGuard)
+	@Post("/createTournament")
+	createTournament(@Body() TournamentDto: TournamentDto) {
+		return this.tournamentService.createTournament(TournamentDto);
+	}
 
-  @ApiOperation({summary: "Update tournament"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.ADMIN])
-  // @UseGuards(RoleGuard)
-  @Put("/updateTournament")
-  updateTournament(@Body() TournamentDto: TournamentDto) {
-    return this.tournamentService.updateTournament(TournamentDto);
-  }
+	@ApiOperation({ summary: "Update tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.ADMIN])
+	// @UseGuards(RoleGuard)
+	@Put("/updateTournament")
+	updateTournament(@Body() TournamentDto: TournamentDto) {
+		return this.tournamentService.updateTournament(TournamentDto);
+	}
 
-  @ApiOperation({summary: "Get tournament information"})
-  @ApiResponse({status: 200, type: String})
-  @Get()
-  getTournaments() {
-    return this.tournamentService.getTournaments();
-  }
+	@ApiOperation({ summary: "Get tournament information" })
+	@ApiResponse({ status: 200, type: String })
+	@Get()
+	getTournaments() {
+		return this.tournamentService.getTournaments();
+	}
 
-  @ApiOperation({summary: "Join team to tournament"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.MANAGER])
-  // @UseGuards(RoleGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Post("/joinToTournament/:id")
-  joinTeamToTournament(@Param("id") idTournament: number, @Req() request: any) {
-    return this.tournamentService.joinTeamToTournament(request.user.id, +idTournament);
-  }
+	@ApiOperation({ summary: "Join team to tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.MANAGER])
+	// @UseGuards(RoleGuard)
+	@UseGuards(AuthGuard("jwt"))
+	@Post("/joinToTournament/:id")
+	joinTeamToTournament(@Param("id") idTournament: number, @Req() request: any) {
+		return this.tournamentService.joinTeamToTournament(
+			request.user.id,
+			+idTournament,
+		);
+	}
 
-  @ApiOperation({summary: "Leave team from tournament"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.MANAGER])
-  // @UseGuards(RoleGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Post("/leaveFromTournament/:id")
-  leaveTeamFromTournament(@Param("id") idTournament: number, @Req() request: any) {
-    return this.tournamentService.leaveTeamFromTournament(request.user.id, +idTournament);
-  }
+	@ApiOperation({ summary: "Leave team from tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.MANAGER])
+	// @UseGuards(RoleGuard)
+	@UseGuards(AuthGuard("jwt"))
+	@Post("/leaveFromTournament/:id")
+	leaveTeamFromTournament(
+		@Param("id") idTournament: number,
+		@Req() request: any,
+	) {
+		return this.tournamentService.leaveTeamFromTournament(
+			request.user.id,
+			+idTournament,
+		);
+	}
 
-  @ApiOperation({summary: "Handle start tournament"})
-  @ApiResponse({status: 200, type: String})
-  // @Role([RoleName.MANAGER])
-  // @UseGuards(RoleGuard)
-  // @UseGuards(AuthGuard('jwt'))
-  @Get("/handleStartTournament/:id")
-  handleStartTournament(@Param("id") id: number) {
-    return this.tournamentService.handleStartTournament(+id);
-  }
+	@ApiOperation({ summary: "Handle start tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.MANAGER])
+	// @UseGuards(RoleGuard)
+	// @UseGuards(AuthGuard('jwt'))
+	@Get("/handleStartTournament/:id")
+	handleStartTournament(@Param("id") id: number) {
+		return this.tournamentService.handleStartTournament(+id);
+	}
+
+
+	@ApiOperation({ summary: "Close tournament" })
+	@ApiResponse({ status: 200, type: String })
+	// @Role([RoleName.ADMIN])
+	// @UseGuards(RoleGuard)
+	@Put("/closeTournament/:id")
+	closeTournament(@Param("id") id: number) {
+		return this.tournamentService.closeTournament(id);
+	}
 }

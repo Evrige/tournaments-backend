@@ -7,14 +7,15 @@ import {
 	Res,
 	UseGuards,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { UserDto } from "../users/dto/user.dto";
+import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserDto } from "../users/dto/user.dto";
 import { UsersService } from "../users/users.service";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Request, Response } from "express";
+import { LoginDto } from "./dto/login.dto";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -25,7 +26,7 @@ export class AuthController {
 	) {}
 
 	@ApiOperation({ summary: "Registration" })
-	@ApiResponse({ status: 200, type: UserDto })
+	@ApiResponse({ status: 201, description: "User created successfully" })
 	@Post("/registration")
 	async registration(
 		@Body() createUserDto: CreateUserDto,
@@ -37,9 +38,15 @@ export class AuthController {
 		return { user, message: "Registration success" };
 	}
 
+	@ApiOperation({ summary: "Login" })
+	@ApiResponse({ status: 200, description: "Login successful", type: UserDto })
 	@UseGuards(LocalAuthGuard)
 	@Post("/login")
-	async login(@Req() req, @Res({ passthrough: true }) res: Response) {
+	async login(
+		@Body() loginDto: LoginDto,
+		@Req() req,
+		@Res({ passthrough: true }) res: Response,
+	) {
 		const { user, accessToken, refreshToken } =
 			await this.authService.generateToken(req.user);
 		this.setCookies(res, accessToken, refreshToken);
@@ -50,21 +57,35 @@ export class AuthController {
 	}
 
 	@ApiOperation({ summary: "Refresh tokens" })
-	@ApiResponse({ status: 200, type: UserDto })
+	@ApiResponse({
+		status: 200,
+		description: "Tokens refreshed successfully",
+		type: UserDto,
+	})
 	@Post("/refreshToken")
 	async refreshToken(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
 	) {
-		const { user, accessToken, refreshToken } =
-			await this.authService.refreshTokens(req.cookies.refreshToken);
-		this.setCookies(res, accessToken, refreshToken);
-		return {
-			user: user,
-			message: "Tokens refreshing",
-		};
+		try {
+			const { user, accessToken, refreshToken } =
+				await this.authService.refreshTokens(req.cookies.refreshToken);
+			this.setCookies(res, accessToken, refreshToken);
+			return {
+				user: user,
+				message: "Tokens refreshing",
+			};
+		} catch (error) {
+			throw error;
+		}
 	}
 
+	@ApiOperation({ summary: "Get user profile" })
+	@ApiResponse({
+		status: 200,
+		description: "User profile retrieved successfully",
+		type: UserDto,
+	})
 	@UseGuards(JwtAuthGuard)
 	@Get("/profile")
 	getProfile(@Req() req) {
