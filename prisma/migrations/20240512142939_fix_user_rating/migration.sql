@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User_Rating" ALTER COLUMN "points" SET DEFAULT LEAST(2000, GREATEST(0));

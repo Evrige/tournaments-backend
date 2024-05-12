@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Team_Rating" ALTER COLUMN "points" SET DEFAULT LEAST(2000, GREATEST(0));
