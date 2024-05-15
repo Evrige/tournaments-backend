@@ -38,6 +38,11 @@ export class TournamentDto {
   @ApiProperty()
   @IsOptional()
   @IsInt({message: ErrorMessage.INT})
+  format?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsInt({message: ErrorMessage.INT})
   arenaId?: number;
 
   @ApiProperty()

@@ -127,6 +127,7 @@ model Tournament {
   maxRating            Int?             @map("max_rating")
   arenaId              Int?             @map("arena_id")
   status               TournamentStatus
+  format               Int?
   registrationClosedAt DateTime         @map("registration_closed_at")
 
   arena     Arens?       @relation(fields: [arenaId], references: [id])

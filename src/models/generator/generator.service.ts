@@ -70,6 +70,7 @@ export class GeneratorService {
 		// 		maxRating: faker.random.arrayElement([1500, 1700, 1900, 2000]),
 		// 		arenaId: faker.random.number({min: 1, max: 10}),
 		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "ONGOING", "FINISHED", "CANCELLED"]),
+		// 		format: faker.random.arrayElement([1, 5, 5, 5, 2]),
 		// 	})
 		// }
 		// for (const tournament of tournaments) {

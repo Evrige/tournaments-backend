@@ -8,130 +8,133 @@ import { RoleName } from "@prisma/client";
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService, private roleService: RoleService) {
-  }
+	constructor(
+		private prisma: PrismaService,
+		private roleService: RoleService,
+	) {}
 
-  async createUser(createUserDto: CreateUserDto) {
-    const user = await this.prisma.user.create({
-      data: createUserDto
-    });
-    const role = await this.roleService.getRoleByValue(RoleName.USER);
-    await this.prisma.user_Role.create({
-      data: {
-        user: { connect: { id: user.id } },
-        role: { connect: { id: role.id } }
-      }
-    });
+	async createUser(createUserDto: CreateUserDto) {
+		const user = await this.prisma.user.create({
+			data: createUserDto,
+		});
+		const role = await this.roleService.getRoleByValue(RoleName.USER);
+		await this.prisma.user_Role.create({
+			data: {
+				user: { connect: { id: user.id } },
+				role: { connect: { id: role.id } },
+			},
+		});
 
-    return await this.findUser(user.email);
-  }
+		return await this.findUser(user.email);
+	}
 
-  async getAllUsers() {
-    return await this.prisma.user.findMany({ include: { roles: true } });
-  }
+	async getAllUsers() {
+		return await this.prisma.user.findMany({ include: { roles: true } });
+	}
 
-  async addRole(addRoleDto: AddRoleDto) {
-    const { userId, value } = addRoleDto;
+	async addRole(addRoleDto: AddRoleDto) {
+		const { userId, value } = addRoleDto;
 
-    const role = await this.roleService.getRoleByValue(value);
+		const role = await this.roleService.getRoleByValue(value);
 
-    if (!role) {
-      throw new HttpException("Role not found", HttpStatus.NOT_FOUND);
-    }
+		if (!role) {
+			throw new HttpException("Role not found", HttpStatus.NOT_FOUND);
+		}
 
-    const updatedUser = await this.prisma.user_Role.create({
-      data: {
-        user: { connect: { id: userId } },
-        role: { connect: { id: role.id } }
-      }
-    });
-    if (!updatedUser) {
-      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-    }
+		const updatedUser = await this.prisma.user_Role.create({
+			data: {
+				user: { connect: { id: userId } },
+				role: { connect: { id: role.id } },
+			},
+		});
+		if (!updatedUser) {
+			throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+		}
 
-    return { message: `Role ${value} added` };
-  }
+		return { message: `Role ${value} added` };
+	}
 
-  async banUser(BanUserDto: BanUserDto) {
-    const user = await this.prisma.user.update({
-        where: {
-          id: BanUserDto.userId
-        },
-        data: {
-          isBanned: true,
-          banReason: BanUserDto.banReason
-        }
-      });
-    if (!user) {
-      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-    }
-    return { message: "Ban success" };
-  }
 
-  async unBanUser(BanUserDto: BanUserDto) {
-    const user = await this.prisma.user.update({
-      where: {
-        id: BanUserDto.userId
-      },
-      data: {
-        isBanned: false,
-        banReason: null
-      }
-    });
-    if (!user) {
-      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-    }
-    return { message: "UnBan success" };
-  }
+	async banUser(BanUserDto: BanUserDto) {
+		const user = await this.prisma.user.update({
+			where: {
+				id: BanUserDto.userId,
+			},
+			data: {
+				isBanned: true,
+				banReason: BanUserDto.banReason,
+			},
+		});
+		if (!user) {
+			throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+		}
+		return { message: "Ban success" };
+	}
 
-  async leaveTeam(userId: number) {
-    try {
-      const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
+	async unBanUser(BanUserDto: BanUserDto) {
+		const user = await this.prisma.user.update({
+			where: {
+				id: BanUserDto.userId,
+			},
+			data: {
+				isBanned: false,
+				banReason: null,
+			},
+		});
+		if (!user) {
+			throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+		}
+		return { message: "UnBan success" };
+	}
 
-      if (!user) {
-        return { message: "User not found" };
-      }
+	async leaveTeam(userId: number) {
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: { id: userId },
+			});
 
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { teamId: null },
-      });
+			if (!user) {
+				return { message: "User not found" };
+			}
 
-      return { message: 'Leave team success' };
-    } catch (error) {
-      return { message: 'Have a error with leave team' };
-    }
-  }
+			await this.prisma.user.update({
+				where: { id: userId },
+				data: { teamId: null },
+			});
 
-  async findUser(email: string) {
-    return await this.prisma.user.findUnique({
-      where: {
-        email
-      },
-      include: {
-        roles: {
-          select: {
-            role: true
-          }
-        }
-      }
-    });
-  }
+			return { message: "Leave team success" };
+		} catch (error) {
+			return { message: "Have a error with leave team" };
+		}
+	}
 
-  async findUserByid(userId: number) {
-    return this.prisma.user.findUnique({
-      where: {
-        id: userId
-      },
-      include: {
-        roles: {
-          select: {
-            role: true
-          }
-        }
-      }
-    });
-  }
+	async findUser(email: string) {
+		return await this.prisma.user.findUnique({
+			where: {
+				email,
+			},
+			include: {
+				roles: {
+					select: {
+						role: true,
+					},
+				},
+			},
+		});
+	}
+
+	async findUserByid(userId: number) {
+		return this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			include: {
+				roles: {
+					select: {
+						role: true,
+					},
+				},
+			},
+		});
+	}
 }
