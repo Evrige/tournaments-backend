@@ -29,9 +29,9 @@ export class UserDto {
 	@IsString({message: ErrorMessage.STRING})
 	lastname?: string;
 
-	@ApiProperty({example: "20", description: "User age"})
-	@IsInt({message: ErrorMessage.INT})
-	age?: number;
+	@ApiProperty({example: "2000-01-01", description: "User birth"})
+	@IsString({message: ErrorMessage.DATE})
+	dateBirth?: Date;
 
 	@ApiProperty({example: "url/user1.jpg", description: "link to profile image"})
 	@IsFQDN({}, {message: ErrorMessage.LINK})
@@ -46,7 +46,7 @@ export class UserDto {
 	banReason?: string;
 
 	@ApiProperty({example: "2024-01-05", description: "When profile created"})
-	@IsString({message: ErrorMessage.STRING})
+	@IsString({message: ErrorMessage.DATE})
 	createdAt?: Date;
 
 	@ApiProperty({example: "USER, ADMIN", description: "Users role"})
