@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {ValidationPipe} from "./pipes/validation.pipes";
 import * as cookieParser from 'cookie-parser';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/docs', app, document);
-
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser());
   app.enableCors({

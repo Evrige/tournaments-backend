@@ -16,6 +16,8 @@ import { LocalAuthGuard } from "./local-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Request, Response } from "express";
 import { LoginDto } from "./dto/login.dto";
+import { Server } from 'socket.io'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 
 @ApiTags("auth")
 @Controller("auth")
@@ -48,7 +50,7 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 	) {
 		const { user, accessToken, refreshToken } =
-			await this.authService.generateToken(req.user);
+			await this.authService.generateToken(req.user.id);
 		this.setCookies(res, accessToken, refreshToken);
 		return {
 			user,
@@ -62,7 +64,7 @@ export class AuthController {
 		description: "Tokens refreshed successfully",
 		type: UserDto,
 	})
-	@Post("/refreshToken")
+	@Get("/refreshToken")
 	async refreshToken(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
@@ -108,4 +110,6 @@ export class AuthController {
 			expires: new Date(Date.now() + 30 * 24 * 60 * 1000),
 		});
 	}
+
 }
+

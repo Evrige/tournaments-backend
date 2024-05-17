@@ -4,7 +4,7 @@ import { PrismaService } from "../../prisma.service";
 import { RoleService } from "../role/role.service";
 import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
-import { RoleName } from "@prisma/client";
+import { RoleName, User } from "@prisma/client";
 
 @Injectable()
 export class UsersService {
@@ -54,7 +54,6 @@ export class UsersService {
 		return { message: `Role ${value} added` };
 	}
 
-
 	async banUser(BanUserDto: BanUserDto) {
 		const user = await this.prisma.user.update({
 			where: {
@@ -89,9 +88,7 @@ export class UsersService {
 
 	async leaveTeam(userId: number) {
 		try {
-			const user = await this.prisma.user.findUnique({
-				where: { id: userId },
-			});
+			const user = await this.findUserByid(userId);
 
 			if (!user) {
 				return { message: "User not found" };
@@ -105,6 +102,19 @@ export class UsersService {
 			return { message: "Leave team success" };
 		} catch (error) {
 			return { message: "Have a error with leave team" };
+		}
+	}
+
+	async updateData(user: User) {
+		try {
+			const { id, ...userData } = user; // Исключаем id из данных обновления
+			await this.prisma.user.update({
+				where: { id },
+				data: userData,
+			});
+			return { message: "User update" };
+		} catch (error) {
+			throw new Error(`Failed to update user: ${error.message}`);
 		}
 	}
 

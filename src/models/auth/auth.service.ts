@@ -28,21 +28,23 @@ export class AuthService {
 			...User,
 			password: hashPassword,
 		});
-		return this.generateToken(newUser);
+		return this.generateToken(newUser.id);
 	}
 
 	async generateToken(
-		user: UserDto,
-	): Promise<{ user: UserDto; accessToken: string; refreshToken: string }> {
+		id: number,
+	): Promise<{ user: any; accessToken: string; refreshToken: string }> {
+		const { password, ...userData } = await this.usersService.findUserByid(id);
 		try {
 			const accessToken = this.jwtService.sign({
-				nickname: user.nickname,
-				userId: user.id,
+				nickname: userData.nickname,
+				userId: userData.id,
 			});
 			const refreshToken = this.jwtService.sign({
-				nickname: user.nickname,
-				userId: user.id,
+				nickname: userData.nickname,
+				userId: userData.id,
 			});
+			const user = userData
 			return { user, accessToken, refreshToken };
 		} catch (error) {
 			throw new HttpException(
@@ -63,13 +65,15 @@ export class AuthService {
 			) {
 				throw new HttpException("Invalid token", HttpStatus.UNAUTHORIZED);
 			}
-			const user = decodedToken as UserDto;
-			return this.generateToken(user);
+			const user = decodedToken;
+			return this.generateToken(user.userId);
 		} catch (error) {
 			throw new HttpException("Invalid token", HttpStatus.UNAUTHORIZED);
 		}
 	}
-
+	async verifyToken(token: string){
+		return await this.jwtService.verify(token)
+	}
 	async validateUser(email: string, password: string): Promise<any> {
 		try {
 			const user = await this.usersService.findUser(email);

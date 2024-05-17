@@ -16,7 +16,7 @@ import { Role } from "../auth/role.decorator";
 import { RoleGuard } from "../auth/role.guard";
 import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
-import { RoleName } from "@prisma/client";
+import { RoleName, User } from "@prisma/client";
 import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("user")
@@ -32,8 +32,6 @@ export class UsersController {
 	create(@Body() createUserDto: CreateUserDto) {
 		return this.usersService.createUser(createUserDto);
 	}
-
-
 
 	@ApiOperation({ summary: "Get all users" })
 	@ApiResponse({ status: 200, type: [UserDto] })
@@ -85,5 +83,14 @@ export class UsersController {
 	@Put("/leave")
 	leaveTeam(@Req() request: any) {
 		return this.usersService.leaveTeam(request.user.id);
+	}
+
+	@ApiOperation({ summary: "Update user" })
+	@ApiResponse({ status: 200, type: String })
+	@UseGuards(AuthGuard("jwt"))
+	@Put("/updateData")
+	updateData(@Body() userData: User, @Req() request: any) {
+		if(request.user.id === userData.id)
+			return this.usersService.updateData(userData);
 	}
 }
