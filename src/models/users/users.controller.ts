@@ -5,8 +5,8 @@ import {
 	Param,
 	Post,
 	Put,
-	Req,
-	UseGuards,
+	Req, Sse,
+	UseGuards
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -18,6 +18,7 @@ import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { RoleName, User } from "@prisma/client";
 import { AuthGuard } from "@nestjs/passport";
+import { interval, map, Observable, switchMap } from "rxjs";
 
 @ApiTags("user")
 @Controller("user")
@@ -35,12 +36,26 @@ export class UsersController {
 
 	@ApiOperation({ summary: "Get all users" })
 	@ApiResponse({ status: 200, type: [UserDto] })
-	@Role([RoleName.ADMIN])
-	@UseGuards(RoleGuard)
+	// @Role([RoleName.ADMIN])
+	// @UseGuards(RoleGuard)
 	@Get()
 	getAllUsers() {
 		return this.usersService.getAllUsers();
 	}
+
+	@ApiOperation({ summary: "SSE" })
+	@ApiResponse({ status: 200, type: String })
+	@UseGuards(AuthGuard("jwt"))
+	@Sse('/sse')
+	async sse(@Req() request: any): Promise<Observable<MessageEvent>> {
+		return interval(30000).pipe(
+			switchMap(async () => {
+				const {password, ...user} = await this.usersService.findUserByid(request.user.id); // Асинхронный запрос пользователя
+				return { data: { user } };
+			})
+		);
+	}
+
 
 	@ApiOperation({ summary: "Get user by email" })
 	@ApiResponse({ status: 200, type: [UserDto] })
@@ -93,4 +108,10 @@ export class UsersController {
 		if(request.user.id === userData.id)
 			return this.usersService.updateData(userData);
 	}
+}
+export interface MessageEvent {
+	data: string | object;
+	id?: string;
+	type?: string;
+	retry?: number;
 }

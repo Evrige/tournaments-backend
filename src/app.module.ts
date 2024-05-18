@@ -17,7 +17,6 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { GeneratorModule } from "./models/generator/generator.module";
 import { SocketModule } from "./models/socket/socket.module";
 import { SocketService } from "./models/socket/socket.service";
-import { SseModule } from './models/sse/sse.module';
 
 @Module({
   imports: [
@@ -35,8 +34,6 @@ import { SseModule } from './models/sse/sse.module';
     RatingModule,
     GeneratorModule,
     SocketModule,
-    SseModule,
-
   ],
   controllers: [AppController],
   providers: [

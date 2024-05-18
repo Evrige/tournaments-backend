@@ -20,6 +20,26 @@ enum RoleName {
   ANALYST
 }
 
+model Game {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  image String
+  logo  String
+
+  tournament Tournament[]
+  users      User_Game[]
+}
+
+model User_Game {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+  game   Game @relation(fields: [gameId], references: [id])
+  gameId Int  @map("game_id")
+
+  @@unique([userId, gameId])
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   name      String?
@@ -35,6 +55,7 @@ model User {
   teamId    Int?      @map("team_id")
 
   roles        User_Role[]
+  game         User_Game[]
   ratings      User_Rating[]
   result       Result[]
   Team         Team?          @relation(fields: [teamId], references: [id])
@@ -126,11 +147,13 @@ model Tournament {
   minRating            Int?             @map("min_rating")
   maxRating            Int?             @map("max_rating")
   arenaId              Int?             @map("arena_id")
+  gameId               Int?             @map("game_id")
   status               TournamentStatus
   format               Int?
   registrationClosedAt DateTime         @map("registration_closed_at")
 
   arena     Arens?       @relation(fields: [arenaId], references: [id])
+  game      Game?        @relation(fields: [gameId], references: [id])
   result    Result[]
   matches   Match[]
   team_list Teams_List[]

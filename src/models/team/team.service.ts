@@ -32,6 +32,8 @@ export class TeamService {
 	}
 
 	async sendInvites(CreateInvitesDto: CreateInvitesDto) {
+		const user = await this.usersService.findUserByid(CreateInvitesDto.userId);
+		if(user.teamId) return {message: "User already in team"}
 		await this.prisma.user_Invites.create({
 			data: {
 				userId: CreateInvitesDto.userId,
