@@ -16,8 +16,6 @@ import { LocalAuthGuard } from "./local-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Request, Response } from "express";
 import { LoginDto } from "./dto/login.dto";
-import { Server } from 'socket.io'
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 
 @ApiTags("auth")
 @Controller("auth")
@@ -38,6 +36,16 @@ export class AuthController {
 			await this.authService.registration(createUserDto);
 		this.setCookies(res, accessToken, refreshToken);
 		return { user, message: "Registration success" };
+	}
+
+	@ApiOperation({ summary: "Logout" })
+	@ApiResponse({ status: 201, description: "Logout successfully" })
+	@UseGuards(JwtAuthGuard)
+	@Get("/logout")
+	async logout(@Res({ passthrough: true }) res: Response) {
+		res.clearCookie("accessToken");
+		res.clearCookie("refreshToken");
+		return { message: "Logout successfully" };
 	}
 
 	@ApiOperation({ summary: "Login" })
@@ -110,6 +118,5 @@ export class AuthController {
 			expires: new Date(Date.now() + 30 * 24 * 60 * 1000),
 		});
 	}
-
 }
 

@@ -48,7 +48,7 @@ model User {
   dateBirth DateTime? @map("date_birth")
   email     String    @unique
   password  String
-  avatar    String?   @default("./uploads/default-profile-logo.jpg")
+  avatar    String?   @default("uploads/default-profile-logo.png")
   isBanned  Boolean?  @map("is_banned")
   banReason String?   @map("ban_reason")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -86,7 +86,7 @@ model User_Rating {
 model Team {
   id        Int      @id @default(autoincrement())
   name      String   @unique()
-  logo      String?  @default("./uploads/default-team-logo.jpg")
+  logo      String?  @default("uploads/default-team-logo.png")
   createdAt DateTime @default(now()) @map("created_at")
 
   user           User[]

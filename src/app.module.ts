@@ -17,12 +17,21 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { GeneratorModule } from "./models/generator/generator.module";
 import { SocketModule } from "./models/socket/socket.module";
 import { SocketService } from "./models/socket/socket.service";
-
+import { GameModule } from './models/game/game.module';
+import { MulterModule } from "@nestjs/platform-express";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env'
+    }),
+    MulterModule.register({
+      dest: './uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     ScheduleModule.forRoot(),
     RoleModule,
@@ -34,6 +43,7 @@ import { SocketService } from "./models/socket/socket.service";
     RatingModule,
     GeneratorModule,
     SocketModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [
