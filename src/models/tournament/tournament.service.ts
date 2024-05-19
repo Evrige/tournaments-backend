@@ -92,9 +92,9 @@ export class TournamentService {
 			});
 			const teamUsers = await this.prisma.user.findMany({
 				where: {
-					teamId: team.id
-				}
-			})
+					teamId: team.id,
+				},
+			});
 			for (const user of teamUsers) {
 				await this.prisma.result.create({
 					data: {
@@ -129,6 +129,10 @@ export class TournamentService {
 					notIn: [TournamentStatus.FINISHED, TournamentStatus.CANCELLED],
 				},
 			},
+			include: {
+				game: true,
+				arena: true,
+			},
 		});
 		return tournamentList;
 	}
@@ -137,6 +141,9 @@ export class TournamentService {
 		const tournament = await this.prisma.tournament.findUnique({
 			where: {
 				id,
+			},
+			include: {
+				game: true,
 			},
 		});
 		return tournament;
@@ -176,10 +183,13 @@ export class TournamentService {
 			return { message: "Registration closed" };
 		const teamRating = await this.prisma.team_Rating.findUnique({
 			where: {
-				teamId: team.id
-			}
-		})
-		if (!teamRating && tournament.minRating > teamRating.points || teamRating.points > tournament.maxRating){
+				teamId: team.id,
+			},
+		});
+		if (
+			(!teamRating && tournament.minRating > teamRating.points) ||
+			teamRating.points > tournament.maxRating
+		) {
 			return { message: "Don't pass the requirements" };
 		}
 		const result = await this.prisma.teams_List.create({

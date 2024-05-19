@@ -58,24 +58,25 @@ export class GeneratorService {
 		//
 		//
 		//
-		// const tournaments = []
-		// for (let i = 0; i < 10; i++) {
-		// 	tournaments.push({
-		// 		name: faker.name.title(),
-		// 		prizePool: faker.random.number({min: 100, max: 10000, precision: 50}),
-		// 		type: faker.random.arrayElement(["OFFLINE", "ONLINE"]),
-		// 		teamCount: faker.random.arrayElement([8, 16, 32]),
-		// 		date: faker.date.future(),
-		// 		minRating: faker.random.arrayElement([0, 0, 0, 200, 350, 500, 750, 1000]),
-		// 		maxRating: faker.random.arrayElement([1500, 1700, 1900, 2000]),
-		// 		arenaId: faker.random.number({min: 1, max: 10}),
-		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "ONGOING", "FINISHED", "CANCELLED"]),
-		// 		format: faker.random.arrayElement([1, 5, 5, 5, 2]),
-		// 	})
-		// }
-		// for (const tournament of tournaments) {
-		// 	await this.tournamentService.createTournament(tournament)
-		// }
+		const tournaments = []
+		for (let i = 0; i < 20; i++) {
+			tournaments.push({
+				name: faker.name.title(),
+				prizePool: faker.random.number({min: 100, max: 10000, precision: 50}),
+				type: faker.random.arrayElement(["OFFLINE", "ONLINE"]),
+				teamCount: faker.random.arrayElement([8, 16, 32]),
+				date: faker.date.future(),
+				minRating: faker.random.arrayElement([0, 0, 0, 200, 350, 500, 750, 1000]),
+				maxRating: faker.random.arrayElement([1500, 1700, 1900, 2000]),
+				// arenaId: faker.random.number({min: 1, max: 10}),
+				status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "ONGOING", "FINISHED", "CANCELLED"]),
+				format: faker.random.arrayElement([1, 5, 5, 5, 2]),
+				gameId: faker.random.arrayElement([6, 7])
+			})
+		}
+		for (const tournament of tournaments) {
+			await this.tournamentService.createTournament(tournament)
+		}
 		//
 		//
 
@@ -128,16 +129,16 @@ export class GeneratorService {
 		// 		}
 		// 	})
 		// }
-		for (let i = 0; i < 8; i++) {
-			await this.prisma.teams_List.create({
-				data: {
-					teamId: i+1,
-					stage: 1,
-					tournamentId: 11,
-					placement: 8
-				}
-			})
-		}
+		// for (let i = 0; i < 8; i++) {
+		// 	await this.prisma.teams_List.create({
+		// 		data: {
+		// 			teamId: i+1,
+		// 			stage: 1,
+		// 			tournamentId: 11,
+		// 			placement: 8
+		// 		}
+		// 	})
+		// }
 	}
 
 }

@@ -55,6 +55,10 @@ export class TournamentDto {
   status: TournamentStatus;
 
   @ApiProperty({required: true})
+  @IsInt({message: ErrorMessage.INT})
+  gameId: number;
+
+  @ApiProperty({required: true})
   @IsOptional()
   @IsDateString({}, {message: ErrorMessage.DATE})
   registrationClosedAt: Date;
