@@ -42,6 +42,13 @@ export class UsersController {
 	getAllUsers() {
 		return this.usersService.getAllUsers();
 	}
+	@ApiOperation({ summary: "Get user data" })
+	@ApiResponse({ status: 200, type: [UserDto] })
+	@UseGuards(AuthGuard("jwt"))
+	@Get("/getData")
+	getData(@Req() request: any) {
+		return this.usersService.findUserByid(request.user.id);
+	}
 
 	@ApiOperation({ summary: "SSE" })
 	@ApiResponse({ status: 200, type: String })

@@ -42,6 +42,7 @@ export class GeneratorService {
 		// for (const arena of arens) {
 		// 	await this.tournamentService.createArena(arena)
 		// }
+
 		//
 		//
 		//
@@ -71,7 +72,7 @@ export class GeneratorService {
 				// arenaId: faker.random.number({min: 1, max: 10}),
 				status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "ONGOING", "FINISHED", "CANCELLED"]),
 				format: faker.random.arrayElement([1, 5, 5, 5, 2]),
-				gameId: faker.random.arrayElement([6, 7])
+				gameId: faker.random.arrayElement([1, 2])
 			})
 		}
 		for (const tournament of tournaments) {
