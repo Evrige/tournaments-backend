@@ -144,6 +144,7 @@ export class UsersService {
 						role: true,
 					},
 				},
+				team: true
 			},
 		});
 	}

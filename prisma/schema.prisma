@@ -58,7 +58,7 @@ model User {
   game         User_Game[]
   ratings      User_Rating[]
   result       Result[]
-  Team         Team?          @relation(fields: [teamId], references: [id])
+  team         Team?          @relation(fields: [teamId], references: [id])
   Analysis     Analysis[]
   User_Invites User_Invites[]
 }
