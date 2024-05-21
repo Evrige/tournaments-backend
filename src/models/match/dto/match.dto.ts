@@ -41,8 +41,8 @@ export class MatchDto {
 
 	@ApiProperty()
 	@IsOptional()
-	@IsString({message: ErrorMessage.STRING})
-	map?: string;
+	@IsInt({message: ErrorMessage.INT})
+	mapId?: number;
 
 	@ApiProperty()
 	@IsString({message: ErrorMessage.STRING})

@@ -27,13 +27,8 @@ export class TournamentService {
 	}
 
 	async createTournament(TournamentDto: TournamentDto) {
-		const registrationClose = moment(TournamentDto.date)
-			.subtract(1, "days")
-			.set({ hour: 23, minute: 59, second: 59 })
-			.utc()
-			.format();
 		const tournament = await this.prisma.tournament.create({
-			data: { ...TournamentDto, registrationClosedAt: registrationClose },
+			data: TournamentDto,
 		});
 		const match = createMatch(tournament);
 		const res = await this.prisma.match.createMany({
@@ -149,6 +144,15 @@ export class TournamentService {
 		return tournament;
 	}
 
+	async getMapsByGame(id: number) {
+		const maps = await this.prisma.map.findMany({
+			where: {
+				gameId: id
+			}
+		});
+		return maps;
+	}
+
 	async joinTeamToTournament(userId: number, tournamentId: number) {
 		const teamId = (await this.usersService.findUserByid(userId)).teamId;
 		// const fullTeam = await this.prisma.user.findMany({
@@ -177,10 +181,6 @@ export class TournamentService {
 			return { message: "Team already registered" };
 		}
 		const tournament = await this.getTournament(tournamentId);
-		if (
-			new Date(tournament.registrationClosedAt).getTime() < new Date().getTime()
-		)
-			return { message: "Registration closed" };
 		const teamRating = await this.prisma.team_Rating.findUnique({
 			where: {
 				teamId: team.id,
@@ -205,12 +205,6 @@ export class TournamentService {
 	}
 
 	async leaveTeamFromTournament(userId: number, tournamentId: number) {
-		const isTournamentStarted = await this.getTournament(tournamentId);
-		if (
-			isTournamentStarted.registrationClosedAt.getTime() < new Date().getTime()
-		) {
-			return { message: "Tournament started" };
-		}
 		const teamId = (await this.usersService.findUserByid(userId)).teamId;
 		const team = await this.prisma.team.findUnique({
 			where: {
@@ -238,21 +232,21 @@ export class TournamentService {
 		return { message: "Registration successfully" };
 	}
 
-	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-	async checkClosedRegistrations() {
-		const currentDateTime = new Date();
-		const tournaments = await this.prisma.tournament.findMany({
-			where: {
-				registrationClosedAt: {
-					lte: currentDateTime,
-				},
-			},
-		});
-
-		for (const tournament of tournaments) {
-			await this.runScriptForTournament(tournament);
-		}
-	}
+	// @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+	// async checkClosedRegistrations() {
+	// 	const currentDateTime = new Date();
+	// 	const tournaments = await this.prisma.tournament.findMany({
+	// 		where: {
+	// 			registrationClosedAt: {
+	// 				lte: currentDateTime,
+	// 			},
+	// 		},
+	// 	});
+	//
+	// 	for (const tournament of tournaments) {
+	// 		await this.runScriptForTournament(tournament);
+	// 	}
+	// }
 
 	async handleStartTournament(tournamentId: number) {
 		const tournament = await this.getTournament(tournamentId);

@@ -61,6 +61,13 @@ export class TournamentController {
 		return this.tournamentService.getTournament(+idTournament);
 	}
 
+	@ApiOperation({ summary: "Get maps by game" })
+	@ApiResponse({ status: 200, type: String })
+	@Get("/getMapsByGame/:id")
+	getMapsByGame(@Param("id") idGame: number) {
+		return this.tournamentService.getMapsByGame(+idGame);
+	}
+
 	@ApiOperation({ summary: "Join team to tournament" })
 	@ApiResponse({ status: 200, type: String })
 	// @Role([RoleName.MANAGER])

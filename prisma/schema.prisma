@@ -28,6 +28,7 @@ model Game {
 
   tournament Tournament[]
   users      User_Game[]
+  map        Map[]
 }
 
 model User_Game {
@@ -138,19 +139,18 @@ model Teams_List {
 }
 
 model Tournament {
-  id                   Int              @id @default(autoincrement())
-  name                 String           @unique
-  prizePool            Int?             @default(0) @map("prize_pool")
-  type                 TournamentType   @map("type")
-  teamCount            Int              @map("team_count")
-  date                 DateTime
-  minRating            Int?             @map("min_rating")
-  maxRating            Int?             @map("max_rating")
-  arenaId              Int?             @map("arena_id")
-  gameId               Int?             @map("game_id")
-  status               TournamentStatus
-  format               Int?
-  registrationClosedAt DateTime         @map("registration_closed_at")
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  prizePool Int?             @default(0) @map("prize_pool")
+  type      TournamentType   @map("type")
+  teamCount Int              @map("team_count")
+  date      DateTime
+  minRating Int?             @map("min_rating")
+  maxRating Int?             @map("max_rating")
+  arenaId   Int?             @map("arena_id")
+  gameId    Int?             @map("game_id")
+  status    TournamentStatus
+  format    Int?
 
   arena     Arens?       @relation(fields: [arenaId], references: [id])
   game      Game?        @relation(fields: [gameId], references: [id])
@@ -192,6 +192,16 @@ model Result {
   team       Team?      @relation(fields: [teamId], references: [id])
 }
 
+model Map {
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  banner String
+  gameId Int    @map("game_id")
+
+  game  Game    @relation(fields: [gameId], references: [id])
+  match Match[]
+}
+
 model Match {
   id                  String   @id
   team1Id             Int?     @map("team1_id")
@@ -201,7 +211,7 @@ model Match {
   tournamentRoundText String   @map("tournament_round_text")
   startTime           DateTime @map("start_time")
   tournamentId        Int      @map("tournament_id")
-  map                 String?
+  mapId               Int?     @map("map_id")
   state               String
   team1RoundsWon      Int?     @map("team1_rounds_won")
   team2RoundsWon      Int?     @map("team2_rounds_won")
@@ -209,6 +219,7 @@ model Match {
   team1      Team?      @relation("Team1Relation", fields: [team1Id], references: [id])
   team2      Team?      @relation("Team2Relation", fields: [team2Id], references: [id])
   teamWin    Team?      @relation("TeamWinRelation", fields: [teamWinId], references: [id])
+  map        Map?       @relation(fields: [mapId], references: [id])
   tournament Tournament @relation(fields: [tournamentId], references: [id])
   analysis   Analysis[]
 }
