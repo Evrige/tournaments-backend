@@ -47,11 +47,18 @@ export class TournamentController {
 		return this.tournamentService.updateTournament(TournamentDto);
 	}
 
-	@ApiOperation({ summary: "Get tournament information" })
+	@ApiOperation({ summary: "Get tournaments information" })
 	@ApiResponse({ status: 200, type: String })
 	@Get()
 	getTournaments() {
 		return this.tournamentService.getTournaments();
+	}
+
+	@ApiOperation({ summary: "Get tournament information" })
+	@ApiResponse({ status: 200, type: String })
+	@Get("/getTournament/:id")
+	getTournament(@Param("id") idTournament: number) {
+		return this.tournamentService.getTournament(+idTournament);
 	}
 
 	@ApiOperation({ summary: "Join team to tournament" })
