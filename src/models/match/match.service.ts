@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {PrismaService} from "../../prisma.service";
 import {MatchDto} from "./dto/match.dto";
+import { Match } from "@prisma/client";
 
 @Injectable()
 export class MatchService {
@@ -35,6 +36,7 @@ export class MatchService {
         team2: true
 			}
 		});
-		return matches;
+		return matches
 	}
+
 }

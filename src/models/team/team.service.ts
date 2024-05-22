@@ -1,23 +1,44 @@
-import {Injectable} from '@nestjs/common';
-import {PrismaService} from "../../prisma.service";
-import {CreateTeamDto} from "./dto/create-team.dto";
-import { CreateUserDto } from "../users/dto/create-user.dto";
-import { InviteStatus, RoleName } from "@prisma/client";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../prisma.service";
+import { CreateTeamDto } from "./dto/create-team.dto";
+import { InviteStatus } from "@prisma/client";
 import { CreateInvitesDto } from "./dto/create-invites.dto";
 import { InviteResponseDto } from "./dto/invite-response.dto";
-import {UsersService} from "../users/users.service";
+import { UsersService } from "../users/users.service";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class TeamService {
 	constructor(private prisma: PrismaService, private usersService: UsersService) {
 	}
 
-	async createTeam(CreateTeamDto: CreateTeamDto) {
+	async createTeam(CreateTeamDto: CreateTeamDto, userId: number) {
+		const teamAlreadyExist = await this.prisma.team.findUnique({
+			where: {
+        name: CreateTeamDto.name
+      }
+		})
+		if (teamAlreadyExist) {
+      return { message: "Team already exist" };
+    }
 		const team = await this.prisma.team.create({
 			data: CreateTeamDto
 		});
-
-		return team;
+		const rating = await this.prisma.team_Rating.create({
+			data: {
+				teamId: team.id,
+        points: 0
+			}
+		})
+		const user = await this.prisma.user.update({
+			where: {
+				id: userId
+			},
+			data: {
+        teamId: team.id
+      }
+		})
+		return {message: "ok"}
 	}
 
 	async deleteTeam(id: number) {
@@ -27,7 +48,20 @@ export class TeamService {
 			}
 		});
 		return {
+
 			message: "Team deleted successfully"
+		}
+	}
+
+	async getTeamUsers(id: number) {
+		const users = await this.prisma.user.findMany({
+			where: {
+				teamId: id
+			}
+		});
+		return {
+			users,
+			message: "Users found"
 		}
 	}
 

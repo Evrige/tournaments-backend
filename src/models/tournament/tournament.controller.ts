@@ -68,15 +68,22 @@ export class TournamentController {
 		return this.tournamentService.getMapsByGame(+idGame);
 	}
 
+	@ApiOperation({ summary: "Get team by tournament" })
+	@ApiResponse({ status: 200, type: String })
+	@Get("/getTeamsByTournament/:id")
+	getTeamsByTournament(@Param("id") idTournament: number) {
+		return this.tournamentService.getTeamsByTournament(+idTournament);
+	}
+
 	@ApiOperation({ summary: "Join team to tournament" })
 	@ApiResponse({ status: 200, type: String })
 	// @Role([RoleName.MANAGER])
 	// @UseGuards(RoleGuard)
 	@UseGuards(AuthGuard("jwt"))
-	@Post("/joinToTournament/:id")
+	@Get("/joinToTournament/:id")
 	joinTeamToTournament(@Param("id") idTournament: number, @Req() request: any) {
 		return this.tournamentService.joinTeamToTournament(
-			request.user.id,
+			request.user.teamId,
 			+idTournament,
 		);
 	}
@@ -86,7 +93,7 @@ export class TournamentController {
 	// @Role([RoleName.MANAGER])
 	// @UseGuards(RoleGuard)
 	@UseGuards(AuthGuard("jwt"))
-	@Post("/leaveFromTournament/:id")
+	@Get("/leaveFromTournament/:id")
 	leaveTeamFromTournament(
 		@Param("id") idTournament: number,
 		@Req() request: any,

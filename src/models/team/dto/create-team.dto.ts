@@ -6,4 +6,7 @@ export class CreateTeamDto {
 	@ApiProperty({required: true})
   @IsString({message: ErrorMessage.STRING})
   readonly name: string;
+
+	@ApiProperty()
+	logo: string;
 }

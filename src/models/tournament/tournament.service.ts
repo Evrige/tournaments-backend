@@ -127,6 +127,11 @@ export class TournamentService {
 			include: {
 				game: true,
 				arena: true,
+				teamList: {
+					include: {
+						team: true,
+					},
+				},
 			},
 		});
 		return tournamentList;
@@ -139,6 +144,12 @@ export class TournamentService {
 			},
 			include: {
 				game: true,
+				arena: true,
+				teamList: {
+					include: {
+						team: true,
+					},
+				},
 			},
 		});
 		return tournament;
@@ -153,8 +164,19 @@ export class TournamentService {
 		return maps;
 	}
 
-	async joinTeamToTournament(userId: number, tournamentId: number) {
-		const teamId = (await this.usersService.findUserByid(userId)).teamId;
+	async getTeamsByTournament(id: number) {
+		const teams = await this.prisma.teams_List.findMany({
+			where: {
+				tournamentId: id
+			},
+			include: {
+				team: true,
+			}
+		});
+		return teams;
+	}
+
+	async joinTeamToTournament(teamId: number, tournamentId: number) {
 		// const fullTeam = await this.prisma.user.findMany({
 		// 	where: {
 		// 		teamId: teamId
@@ -186,12 +208,12 @@ export class TournamentService {
 				teamId: team.id,
 			},
 		});
-		if (
-			(!teamRating && tournament.minRating > teamRating.points) ||
-			teamRating.points > tournament.maxRating
-		) {
-			return { message: "Don't pass the requirements" };
-		}
+		// if (
+		// 	(!teamRating && tournament.minRating > teamRating.points) ||
+		// 	teamRating.points > tournament.maxRating
+		// ) {
+		// 	return { message: "Don't pass the requirements" };
+		// }
 		const result = await this.prisma.teams_List.create({
 			data: {
 				tournamentId: tournamentId,
@@ -201,7 +223,10 @@ export class TournamentService {
 			},
 		});
 		if (!result) return { message: "Error registration" };
-		return { message: "Registration successfully" };
+		const tournamentData = await this.getTournament(tournamentId);
+		return {
+			tournament: tournamentData,
+			message: "Registration successfully" };
 	}
 
 	async leaveTeamFromTournament(userId: number, tournamentId: number) {
@@ -228,8 +253,11 @@ export class TournamentService {
 				id: alreadyRegister.id,
 			},
 		});
-		if (!result) return { message: "Error registration" };
-		return { message: "Registration successfully" };
+		if (!result) return { message: "Error leave" };
+		const tournamentData = await this.getTournament(tournamentId);
+		return {
+			tournament: tournamentData,
+			message: "Leave successfully" };
 	}
 
 	// @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
