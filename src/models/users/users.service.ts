@@ -24,6 +24,12 @@ export class UsersService {
 				role: { connect: { id: role.id } },
 			},
 		});
+		await this.prisma.team_Rating.create({
+			data: {
+				teamId: user.id,
+				points: 0
+			}
+		})
 
 		return await this.findUser(user.email);
 	}
@@ -107,7 +113,7 @@ export class UsersService {
 
 	async updateData(user: User) {
 		try {
-			const { id, ...userData } = user; // Исключаем id из данных обновления
+			const { id, ...userData } = user;
 			await this.prisma.user.update({
 				where: { id },
 				data: userData,
@@ -147,5 +153,24 @@ export class UsersService {
 				team: true
 			},
 		});
+	}
+
+	async findUsersByNickname(query: string) {
+		const users =  await this.prisma.user.findMany({
+			where: {
+				nickname: {
+					contains: query,
+					mode: 'insensitive'
+				}
+			},
+			select: {
+				id: true,
+				nickname: true,
+				avatar: true,
+				teamId: true
+			}
+		});
+		if (!users) return {message: "No users found"}
+		return {users, message: "Users found"}
 	}
 }

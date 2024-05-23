@@ -75,11 +75,9 @@ export class TeamController {
 
   @ApiOperation({summary: "Get team users"})
   @ApiResponse({status: 200, type: String})
-  @Role([RoleName.MANAGER])
-  @UseGuards(RoleGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get("/getTeamUsers")
   getTeamUsers(@Req() request: any) {
-    console.log("users");
     return this.teamService.getTeamUsers(request.user.teamId);
   }
 

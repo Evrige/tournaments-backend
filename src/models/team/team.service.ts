@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service";
 import { CreateTeamDto } from "./dto/create-team.dto";
-import { InviteStatus } from "@prisma/client";
+import { InviteStatus, RoleName } from "@prisma/client";
 import { CreateInvitesDto } from "./dto/create-invites.dto";
 import { InviteResponseDto } from "./dto/invite-response.dto";
 import { UsersService } from "../users/users.service";
@@ -38,6 +38,10 @@ export class TeamService {
         teamId: team.id
       }
 		})
+		const addRole = await this.usersService.addRole({
+			userId: userId,
+      value: RoleName.MANAGER
+		})
 		return {message: "ok"}
 	}
 
@@ -57,6 +61,11 @@ export class TeamService {
 		const users = await this.prisma.user.findMany({
 			where: {
 				teamId: id
+			},
+			select: {
+				id: true,
+				nickname: true,
+				avatar: true
 			}
 		});
 		return {

@@ -1,8 +1,7 @@
 import {
 	Body,
 	Controller,
-	Get,
-	Param,
+	Get, Param,
 	Post,
 	Put,
 	Req, Sse,
@@ -48,6 +47,14 @@ export class UsersController {
 	@Get("/getData")
 	getData(@Req() request: any) {
 		return this.usersService.findUserByid(request.user.id);
+	}
+
+	// @ApiOperation({ summary: "Find users" })
+	// @ApiResponse({ status: 200, type: String })
+	@Get("/findUsers/:nickname")
+	async findUsersByNickname(@Param("nickname") nickname: string) {
+		console.log("nickname ", nickname);
+		return `Received nickname: ${nickname}`;
 	}
 
 	@ApiOperation({ summary: "SSE" })
