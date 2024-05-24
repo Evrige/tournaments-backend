@@ -85,7 +85,7 @@ export class TeamService {
 			}
 		});
 		return {
-      message: "Invites sent successfully"
+      message: "ok"
     }
 	}
 
@@ -116,4 +116,6 @@ export class TeamService {
 			}
 		}
 	}
+
+
 }

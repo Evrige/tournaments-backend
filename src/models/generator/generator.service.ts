@@ -81,22 +81,19 @@ export class GeneratorService {
 		//
 		//
 
-		// const users = []
-		// for (let i = 0; i < 100; i++) {
-		// 	users.push({
-		// 		name: faker.name.firstName(),
-		// 		lastname: faker.name.lastName(),
-		// 		nickname: faker.internet.userName(),
-		// 		age: faker.random.number({min: 17, max: 35}),
-		// 		email: faker.internet.email(),
-		//     password: faker.internet.password(),
-		//     teamId: faker.random.number({min: 1, max: 50}),
-		// 		avatar: faker.image.avatar(),
-		// 	})
-		// }
-		// for (const user of users) {
-		// 	await this.authService.registration(user)
-		// }
+		const users = []
+		for (let i = 0; i < 20; i++) {
+			users.push({
+				name: faker.name.firstName(),
+				lastname: faker.name.lastName(),
+				nickname: `Evrige1285${i}`,
+				email: faker.internet.email(),
+		    password: faker.internet.password(),
+			})
+		}
+		for (const user of users) {
+			await this.authService.registration(user)
+		}
 
 		// const invites = []
 		// for (let i = 0; i < 100; i++) {

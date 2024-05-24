@@ -52,9 +52,8 @@ export class UsersController {
 	// @ApiOperation({ summary: "Find users" })
 	// @ApiResponse({ status: 200, type: String })
 	@Get("/findUsers/:nickname")
-	async findUsersByNickname(@Param("nickname") nickname: string) {
-		console.log("nickname ", nickname);
-		return `Received nickname: ${nickname}`;
+	async findUsersByNickname(@Param() params: any) {
+		return this.usersService.findUsersByNickname(params.nickname);
 	}
 
 	@ApiOperation({ summary: "SSE" })
@@ -64,8 +63,21 @@ export class UsersController {
 	async sse(@Req() request: any): Promise<Observable<MessageEvent>> {
 		return interval(30000).pipe(
 			switchMap(async () => {
-				const {password, ...user} = await this.usersService.findUserByid(request.user.id); // Асинхронный запрос пользователя
+				const {password, ...user} = await this.usersService.findUserByid(request.user.id);
 				return { data: { user } };
+			})
+		);
+	}
+
+	@ApiOperation({ summary: "SSE invites" })
+	@ApiResponse({ status: 200, type: String })
+	@UseGuards(AuthGuard("jwt"))
+	@Sse('/invites')
+	async sseInvites(@Req() request: any): Promise<Observable<MessageEvent>> {
+		return interval(5000).pipe(
+			switchMap(async () => {
+				const invites = await this.usersService.getInvites(request.user.id);
+				return { data: { invites } };
 			})
 		);
 	}

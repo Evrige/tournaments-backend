@@ -4,7 +4,7 @@ import { PrismaService } from "../../prisma.service";
 import { RoleService } from "../role/role.service";
 import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
-import { RoleName, User } from "@prisma/client";
+import { InviteStatus, RoleName, User } from "@prisma/client";
 
 @Injectable()
 export class UsersService {
@@ -108,6 +108,22 @@ export class UsersService {
 			return { message: "Leave team success" };
 		} catch (error) {
 			return { message: "Have a error with leave team" };
+		}
+	}
+
+	async getInvites(userId: number) {
+		const invites = await this.prisma.user_Invites.findMany({
+			where: {
+				userId,
+				status: InviteStatus.PENDING
+			},
+			include: {
+        team: true
+      }
+		})
+		return {
+			invites,
+			message: "ok"
 		}
 	}
 

@@ -105,7 +105,7 @@ model User_Invites {
   user   User         @relation(fields: [userId], references: [id])
   userId Int          @map("user_id")
   teamId Int          @map("team_id")
-  Team   Team         @relation(fields: [teamId], references: [id])
+  team   Team         @relation(fields: [teamId], references: [id])
   status InviteStatus
 
   @@unique([userId, teamId])

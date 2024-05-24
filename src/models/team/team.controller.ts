@@ -98,4 +98,5 @@ export class TeamController {
   inviteResponse(@Body() dto: InviteResponseDto, @Req() request: any) {
     return this.teamService.inviteResponse(dto, request.user.id);
   }
+
 }
