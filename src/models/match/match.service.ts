@@ -32,8 +32,29 @@ export class MatchService {
 				tournamentId: +id
 			},
 			include: {
-				team1: true,
-        team2: true
+				team1: {
+					include: {
+						user: {
+							select: {
+								id: true,
+								nickname: true,
+								avatar: true
+							}
+						}
+					}
+				},
+				team2: {
+					include: {
+						user: {
+							select: {
+                id: true,
+                nickname: true,
+                avatar: true
+              }
+						}
+					}
+				},
+				map: true
 			}
 		});
 		return matches

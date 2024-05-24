@@ -106,7 +106,7 @@ export class TournamentController {
 
 	@ApiOperation({ summary: "Handle start tournament" })
 	@ApiResponse({ status: 200, type: String })
-	// @Role([RoleName.MANAGER])
+	// @Role([RoleName.ADMIN])
 	// @UseGuards(RoleGuard)
 	// @UseGuards(AuthGuard('jwt'))
 	@Get("/handleStartTournament/:id")

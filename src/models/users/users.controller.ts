@@ -49,8 +49,8 @@ export class UsersController {
 		return this.usersService.findUserByid(request.user.id);
 	}
 
-	// @ApiOperation({ summary: "Find users" })
-	// @ApiResponse({ status: 200, type: String })
+	@ApiOperation({ summary: "Find users" })
+	@ApiResponse({ status: 200, type: String })
 	@Get("/findUsers/:nickname")
 	async findUsersByNickname(@Param() params: any) {
 		return this.usersService.findUsersByNickname(params.nickname);
@@ -77,7 +77,7 @@ export class UsersController {
 		return interval(5000).pipe(
 			switchMap(async () => {
 				const invites = await this.usersService.getInvites(request.user.id);
-				return { data: { invites } };
+				return { data: { ...invites } };
 			})
 		);
 	}
@@ -123,7 +123,7 @@ export class UsersController {
 	@UseGuards(AuthGuard("jwt"))
 	@Put("/leave")
 	leaveTeam(@Req() request: any) {
-		return this.usersService.leaveTeam(request.user.id);
+		return this.usersService.leaveTeam(request.user);
 	}
 
 	@ApiOperation({ summary: "Update user" })

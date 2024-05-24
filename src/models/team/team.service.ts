@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { InviteStatus, RoleName } from "@prisma/client";
@@ -91,30 +91,40 @@ export class TeamService {
 
 	async inviteResponse(InviteResponseDto: InviteResponseDto, userId: number) {
 		const user = await this.usersService.findUserByid(userId);
+
 		if (!user) {
-      return { message: "User not found" };
-    } else if (user.teamId) {
-			return { message: "You are already in team"}
+			throw new HttpException({ message: "User not found" }, HttpStatus.NOT_FOUND);
+		} else if (user.teamId) {
+			throw new HttpException({ message: "You are already in a team" }, HttpStatus.BAD_REQUEST);
 		}
+
 		const response = await this.prisma.user_Invites.update({
 			where: { id: InviteResponseDto.id },
 			data: {
 				status: InviteResponseDto.status
 			}
 		});
-		if (response.status === InviteStatus.ACCEPTED){
-			const user = await this.prisma.user.update({
+
+		if (response.status === InviteStatus.ACCEPTED) {
+			await this.prisma.user.update({
 				where: {
-          id: response.userId
-        },
-        data: {
-          teamId: response.teamId
-        }
-			})
+					id: response.userId
+				},
+				data: {
+					teamId: response.teamId
+				}
+			});
+
 			return {
+				statusCode: HttpStatus.OK,
 				message: "User added to team"
-			}
+			};
 		}
+
+		return {
+			statusCode: HttpStatus.OK,
+			message: "Invite response updated"
+		};
 	}
 
 

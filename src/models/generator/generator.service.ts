@@ -54,7 +54,7 @@ export class GeneratorService {
 		//   })
 		// }
 		// for (const team of teams) {
-		// 	await this.teamService.createTeam(team)
+		// 	await this.teamService.createTeam(team, 7)
 		// }
 
 
@@ -82,17 +82,20 @@ export class GeneratorService {
 		//
 
 		const users = []
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < 5; i++) {
 			users.push({
 				name: faker.name.firstName(),
 				lastname: faker.name.lastName(),
-				nickname: `Evrige1285${i}`,
+				nickname: faker.name.firstName(),
 				email: faker.internet.email(),
 		    password: faker.internet.password(),
+				teamId: 61
 			})
 		}
 		for (const user of users) {
-			await this.authService.registration(user)
+			await this.prisma.user.create({
+				data: user
+			})
 		}
 
 		// const invites = []
@@ -130,9 +133,9 @@ export class GeneratorService {
 		// for (let i = 0; i < 8; i++) {
 		// 	await this.prisma.teams_List.create({
 		// 		data: {
-		// 			teamId: i+72,
+		// 			teamId: i+59,
 		// 			stage: 1,
-		// 			tournamentId: 16,
+		// 			tournamentId: 17,
 		// 			placement: 8
 		// 		}
 		// 	})
