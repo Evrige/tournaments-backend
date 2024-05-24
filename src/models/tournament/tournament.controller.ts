@@ -121,6 +121,6 @@ export class TournamentController {
 	// @UseGuards(RoleGuard)
 	@Put("/closeTournament/:id")
 	closeTournament(@Param("id") id: number) {
-		return this.tournamentService.closeTournament(id);
+		return this.tournamentService.closeTournament(+id);
 	}
 }

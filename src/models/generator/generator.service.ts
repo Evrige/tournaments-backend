@@ -81,22 +81,22 @@ export class GeneratorService {
 		//
 		//
 
-		const users = []
-		for (let i = 0; i < 5; i++) {
-			users.push({
-				name: faker.name.firstName(),
-				lastname: faker.name.lastName(),
-				nickname: faker.name.firstName(),
-				email: faker.internet.email(),
-		    password: faker.internet.password(),
-				teamId: 61
-			})
-		}
-		for (const user of users) {
-			await this.prisma.user.create({
-				data: user
-			})
-		}
+		// const users = []
+		// for (let i = 0; i < 5; i++) {
+		// 	users.push({
+		// 		name: faker.name.firstName(),
+		// 		lastname: faker.name.lastName(),
+		// 		nickname: faker.name.firstName(),
+		// 		email: faker.internet.email(),
+		//     password: faker.internet.password(),
+		// 		teamId: 75
+		// 	})
+		// }
+		// for (const user of users) {
+		// 	await this.prisma.user.create({
+		// 		data: user
+		// 	})
+		// }
 
 		// const invites = []
 		// for (let i = 0; i < 100; i++) {
@@ -133,9 +133,9 @@ export class GeneratorService {
 		// for (let i = 0; i < 8; i++) {
 		// 	await this.prisma.teams_List.create({
 		// 		data: {
-		// 			teamId: i+59,
+		// 			teamId: i+3,
 		// 			stage: 1,
-		// 			tournamentId: 17,
+		// 			tournamentId: 1,
 		// 			placement: 8
 		// 		}
 		// 	})

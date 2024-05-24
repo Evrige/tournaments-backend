@@ -137,6 +137,8 @@ model Teams_List {
 
   team        Team       @relation(fields: [teamId], references: [id])
   tournamnent Tournament @relation(fields: [tournamentId], references: [id])
+
+  @@unique([teamId, tournamentId])
 }
 
 model Tournament {

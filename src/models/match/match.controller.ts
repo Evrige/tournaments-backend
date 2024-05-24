@@ -13,7 +13,7 @@ export class MatchController {
 	// @Role([RoleName.ADMIN])
 	// @UseGuards(RoleGuard)
 	@Put("/updateMatch")
-	updateMatch(@Body() MatchDto: MatchDto) {
+	updateMatch(@Body() MatchDto: any) {
 		return this.matchService.updateMatch(MatchDto);
 	}
 

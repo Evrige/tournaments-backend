@@ -5,8 +5,6 @@ import { TournamentDto } from "./dto/tournament.dto";
 import { TournamentStatus } from "@prisma/client";
 import { createMatch } from "../../utils/create-match";
 import { UsersService } from "../users/users.service";
-import * as moment from "moment";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { MatchService } from "../match/match.service";
 import { fillMatches } from "../../utils/fillMatches";
 import { ratingCalc } from "../../utils/rating-calc";
@@ -158,8 +156,8 @@ export class TournamentService {
 	async getMapsByGame(id: number) {
 		const maps = await this.prisma.map.findMany({
 			where: {
-				gameId: id
-			}
+				gameId: id,
+			},
 		});
 		return maps;
 	}
@@ -167,11 +165,11 @@ export class TournamentService {
 	async getTeamsByTournament(id: number) {
 		const teams = await this.prisma.teams_List.findMany({
 			where: {
-				tournamentId: id
+				tournamentId: id,
 			},
 			include: {
 				team: true,
-			}
+			},
 		});
 		return teams;
 	}
@@ -226,7 +224,8 @@ export class TournamentService {
 		const tournamentData = await this.getTournament(tournamentId);
 		return {
 			tournament: tournamentData,
-			message: "Registration successfully" };
+			message: "Registration successfully",
+		};
 	}
 
 	async leaveTeamFromTournament(userId: number, tournamentId: number) {
@@ -257,7 +256,8 @@ export class TournamentService {
 		const tournamentData = await this.getTournament(tournamentId);
 		return {
 			tournament: tournamentData,
-			message: "Leave successfully" };
+			message: "Leave successfully",
+		};
 	}
 
 	// @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
