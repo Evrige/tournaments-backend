@@ -8,6 +8,7 @@ import { UsersService } from "../users/users.service";
 import { MatchService } from "../match/match.service";
 import { fillMatches } from "../../utils/fillMatches";
 import { ratingCalc } from "../../utils/rating-calc";
+import { adjustPoints } from "../../utils/adjustPoints";
 
 @Injectable()
 export class TournamentService {
@@ -67,27 +68,26 @@ export class TournamentService {
 					placement: team.placement,
 				},
 			});
-			const tournament = await this.getTournament(tournamentId);
+
+			const tournament = await this.prisma.tournament.findUnique({
+				where: { id: tournamentId } });
 			const points = ratingCalc(tournament, team);
-			const ratings = await this.prisma.team_Rating.upsert({
-				where: {
-					teamId: team.teamId,
-				},
+
+			const teamRating = await this.prisma.team_Rating.upsert({
+				where: { teamId: team.teamId },
 				update: {
-					points: {
-						increment: points,
-					},
+					points: adjustPoints((await this.prisma.team_Rating.findUnique({ where: { teamId: team.teamId } })).points + points),
 				},
 				create: {
 					teamId: team.teamId,
-					points,
+					points: adjustPoints(points),
 				},
 			});
+
 			const teamUsers = await this.prisma.user.findMany({
-				where: {
-					teamId: team.id,
-				},
+				where: { teamId: team.teamId },
 			});
+
 			for (const user of teamUsers) {
 				await this.prisma.result.create({
 					data: {
@@ -96,18 +96,15 @@ export class TournamentService {
 						placement: team.placement,
 					},
 				});
-				await this.prisma.user_Rating.upsert({
-					where: {
-						userId: user.id,
-					},
+
+				const userRating = await this.prisma.user_Rating.upsert({
+					where: { userId: user.id },
 					update: {
-						points: {
-							increment: points,
-						},
+						points: adjustPoints((await this.prisma.user_Rating.findUnique({ where: { userId: user.id } })).points + points),
 					},
 					create: {
 						userId: user.id,
-						points,
+						points: adjustPoints(points),
 					},
 				});
 			}

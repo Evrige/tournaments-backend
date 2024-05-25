@@ -47,7 +47,7 @@ export class GeneratorService {
 		//
 		//
 		// const teams = []
-		// for (let i = 0; i < 20; i++) {
+		// for (let i = 0; i < 8; i++) {
 		// 	teams.push({
 		//     name: faker.address.city(),
 		// 		logo: "uploads/default-team-logo.png"
@@ -89,7 +89,7 @@ export class GeneratorService {
 		// 		nickname: faker.name.firstName(),
 		// 		email: faker.internet.email(),
 		//     password: faker.internet.password(),
-		// 		teamId: 75
+		// 		teamId: 1
 		// 	})
 		// }
 		// for (const user of users) {
@@ -99,7 +99,7 @@ export class GeneratorService {
 		// }
 
 		// const invites = []
-		// for (let i = 0; i < 100; i++) {
+		// for (let i = 0; i < 5; i++) {
 		// 	invites.push({
 		// 		teamId: faker.random.number({min: 1, max: 50}),
 		// 		userId: faker.random.number({min: 1, max: 152}),
@@ -120,6 +120,17 @@ export class GeneratorService {
 		// 	await this.teamService.inviteResponse(inviteResponse, )
 		// }
 
+		// const invitesResponse = []
+		// for (let i = 0; i < 4; i++) {
+		// 	invitesResponse.push({
+		// 		id: i + 3,
+		// 		status: faker.random.arrayElement(["ACCEPTED"]),
+		// 	})
+		// }
+		// for (const inviteResponse of invitesResponse) {
+		// 	await this.teamService.inviteResponse(inviteResponse, 1)
+		// }
+
 		// for (let i = 0; i < 50; i++) {
 		// 	await this.prisma.teams_List.create({
 		// 		data: {
@@ -133,9 +144,9 @@ export class GeneratorService {
 		// for (let i = 0; i < 8; i++) {
 		// 	await this.prisma.teams_List.create({
 		// 		data: {
-		// 			teamId: i+3,
+		// 			teamId: i+2,
 		// 			stage: 1,
-		// 			tournamentId: 1,
+		// 			tournamentId: 4,
 		// 			placement: 8
 		// 		}
 		// 	})

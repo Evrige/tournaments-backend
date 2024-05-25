@@ -4,16 +4,16 @@ import { TournamentDto } from "../models/tournament/dto/tournament.dto";
 export const ratingCalc = (tournament: TournamentDto, team: Teams_List) => {
 	let points = 0;
 	switch (true) {
-		case team.placement >= 8:
-			points = (tournament.maxRating * 0.1) / team.placement;
+		case team.placement <= 8:
+			points = (tournament.maxRating || 500 * 0.1) / team.placement;
 			break;
-		case team.placement >= 16:
+		case team.placement <= 16:
 			points = 10;
 			break;
-		case team.placement < 16 && team.placement >= 32:
+		case team.placement > 16 && team.placement <= 32:
 			points = -10;
 			break;
-		case team.placement < 32 && team.placement >= 64:
+		case team.placement > 32 && team.placement <= 64:
 			points = -20;
 			break;
 			default: points = -30
