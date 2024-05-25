@@ -123,4 +123,11 @@ export class TournamentController {
 	closeTournament(@Param("id") id: number) {
 		return this.tournamentService.closeTournament(+id);
 	}
+
+	@ApiOperation({ summary: "Result tournaments" })
+	@ApiResponse({ status: 200, type: String })
+	@Get("/getResult")
+	getResult() {
+		return this.tournamentService.getResult();
+	}
 }

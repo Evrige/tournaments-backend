@@ -132,6 +132,19 @@ export class TournamentService {
 		return tournamentList;
 	}
 
+	async getResult() {
+		const tournamentList = await this.prisma.tournament.findMany({
+			where: {
+				status: TournamentStatus.FINISHED,
+			},
+			include: {
+				game: true,
+				arena: true,
+			},
+		});
+		return tournamentList;
+	}
+
 	async getTournament(id: number): Promise<TournamentDto> {
 		const tournament = await this.prisma.tournament.findUnique({
 			where: {

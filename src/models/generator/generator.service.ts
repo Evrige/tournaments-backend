@@ -70,7 +70,7 @@ export class GeneratorService {
 		// 		minRating: faker.random.arrayElement([0, 0, 0, 200, 350, 500, 750, 1000]),
 		// 		maxRating: faker.random.arrayElement([1500, 1700, 1900, 2000]),
 		// 		// arenaId: faker.random.number({min: 1, max: 10}),
-		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "ONGOING", "FINISHED", "CANCELLED"]),
+		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "FINISHED", "FINISHED", "CANCELLED"]),
 		// 		format: faker.random.arrayElement([1, 5, 5, 5, 2]),
 		// 		gameId: faker.random.arrayElement([1, 2])
 		// 	})
@@ -89,12 +89,18 @@ export class GeneratorService {
 		// 		nickname: faker.name.firstName(),
 		// 		email: faker.internet.email(),
 		//     password: faker.internet.password(),
-		// 		teamId: 1
+		// 		teamId: 8
 		// 	})
 		// }
 		// for (const user of users) {
-		// 	await this.prisma.user.create({
+		// 	const userData = await this.prisma.user.create({
 		// 		data: user
+		// 	})
+		// 	await this.prisma.user_Rating.create({
+		// 		data: {
+		// 			userId: userData.id,
+		// 			points: 0
+		// 		}
 		// 	})
 		// }
 
@@ -144,9 +150,9 @@ export class GeneratorService {
 		// for (let i = 0; i < 8; i++) {
 		// 	await this.prisma.teams_List.create({
 		// 		data: {
-		// 			teamId: i+2,
+		// 			teamId: i+1,
 		// 			stage: 1,
-		// 			tournamentId: 4,
+		// 			tournamentId: 1,
 		// 			placement: 8
 		// 		}
 		// 	})
