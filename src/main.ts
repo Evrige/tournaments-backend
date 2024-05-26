@@ -29,6 +29,10 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     credentials: true
   });
+  app.enableCors({
+    origin: 'https://tournament-frontend-km9l0p6ti-arturs-projects-ceca795c.vercel.app',
+    credentials: true
+  });
   await app.listen(PORT, () => {
     console.log('listening on port ' + PORT);
   });
