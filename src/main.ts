@@ -25,10 +25,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser());
   app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true
-  });
+  // app.enableCors({
+  //   origin: 'http://localhost:3000',
+  //   credentials: true
+  // });
   app.enableCors({
     origin: 'https://tournament-frontend-km9l0p6ti-arturs-projects-ceca795c.vercel.app',
     credentials: true
