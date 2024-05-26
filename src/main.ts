@@ -26,7 +26,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://tournament-frontend-km9l0p6ti-arturs-projects-ceca795c.vercel.app'],
+    origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true
   });
   await app.listen(PORT, () => {
