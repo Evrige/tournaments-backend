@@ -24,7 +24,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser());
-  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+  const uploadsDir = path.join(__dirname, '..', 'uploads');
+  console.log('Serving static files from:', uploadsDir);
+  app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true
