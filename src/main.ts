@@ -27,15 +27,15 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe())
   app.use(cookieParser());
-  const uploadsDir = path.join(__dirname, '..', 'uploads');
-  console.log('Сервируем статические файлы из:', uploadsDir);
-
-  // Проверяем существование папки uploads и создаем её, если она отсутствует
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-
-  app.use('/uploads', express.static(uploadsDir));
+  // const uploadsDir = path.join(__dirname, '..', 'uploads');
+  // console.log('Сервируем статические файлы из:', uploadsDir);
+  //
+  // // Проверяем существование папки uploads и создаем её, если она отсутствует
+  // if (!fs.existsSync(uploadsDir)) {
+  //   fs.mkdirSync(uploadsDir, { recursive: true });
+  // }
+  //
+  // app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true
