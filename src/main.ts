@@ -30,18 +30,16 @@ async function bootstrap() {
   const uploadsDir = path.join(__dirname, '..', 'uploads');
   console.log('Serving static files from:', uploadsDir);
   app.use('/uploads', express.static(uploadsDir));
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
 
+  app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true
   });
-  fs.readdir(uploadsDir, (err, files) => {
-    if (err) {
-      console.error('Unable to scan directory:', err);
-      return;
-    }
-    console.log('Files in uploads directory:', files);
-  });
+
   await app.listen(PORT, () => {
     console.log('listening on port ' + PORT);
   });
