@@ -29,24 +29,7 @@ async function bootstrap() {
   app.use(cookieParser());
   const baseDir = path.join(__dirname, '..');
   const uploadsDir = path.join(baseDir, 'uploads');
-  fs.readdir(baseDir, (err, files) => {
-    if (err) {
-      console.error('Не удалось прочитать основную директорию:', err);
-    } else {
-      console.log('Содержимое основной директории:', files);
-    }
-    // Логируем содержимое папки uploads
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-    fs.readdir(uploadsDir, (err, files) => {
-      if (err) {
-        console.error('Не удалось прочитать директорию uploads:', err);
-      } else {
-        console.log('Содержимое директории uploads:', files);
-      }
-    });
-  });
+
   app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
