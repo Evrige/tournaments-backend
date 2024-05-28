@@ -6,6 +6,9 @@ import { ValidationPipe } from "./pipes/validation.pipes";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as path from "path";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
+import * as fs from "node:fs";
 
 dotenv.config();
 
@@ -27,9 +30,17 @@ async function bootstrap() {
   const uploadsDir = path.join(__dirname, '..', 'uploads');
   console.log('Serving static files from:', uploadsDir);
   app.use('/uploads', express.static(uploadsDir));
+
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true
+  });
+  fs.readdir(uploadsDir, (err, files) => {
+    if (err) {
+      console.error('Unable to scan directory:', err);
+      return;
+    }
+    console.log('Files in uploads directory:', files);
   });
   await app.listen(PORT, () => {
     console.log('listening on port ' + PORT);
