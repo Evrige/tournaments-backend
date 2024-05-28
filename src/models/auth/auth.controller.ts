@@ -110,12 +110,13 @@ export class AuthController {
 		res.cookie("accessToken", accessToken, {
 			httpOnly: true,
 			secure: false,
-			expires: new Date(Date.now() + 1 * 3 * 60 * 1000),
+			expires: new Date(Date.now() + 1 * 30 * 60 * 1000),
 		});
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			secure: false,
-			expires: new Date(Date.now() + 30 * 24 * 60 * 1000),
+			expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+			,
 		});
 	}
 }

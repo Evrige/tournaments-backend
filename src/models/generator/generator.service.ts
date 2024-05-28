@@ -47,7 +47,7 @@ export class GeneratorService {
 		//
 		//
 		// const teams = []
-		// for (let i = 0; i < 8; i++) {
+		// for (let i = 0; i < 30; i++) {
 		// 	teams.push({
 		//     name: faker.address.city(),
 		// 		logo: "uploads/default-team-logo.png"
@@ -89,7 +89,7 @@ export class GeneratorService {
 		// 		nickname: faker.name.firstName(),
 		// 		email: faker.internet.email(),
 		//     password: faker.internet.password(),
-		// 		teamId: 8
+		// 		teamId: 7
 		// 	})
 		// }
 		// for (const user of users) {
@@ -147,16 +147,16 @@ export class GeneratorService {
 		// 		}
 		// 	})
 		// }
-		// for (let i = 0; i < 8; i++) {
-		// 	await this.prisma.teams_List.create({
-		// 		data: {
-		// 			teamId: i+1,
-		// 			stage: 1,
-		// 			tournamentId: 1,
-		// 			placement: 8
-		// 		}
-		// 	})
-		// }
+		for (let i = 0; i < 8; i++) {
+			await this.prisma.teams_List.create({
+				data: {
+					teamId: i+4,
+					stage: 1,
+					tournamentId: 7,
+					placement: 8
+				}
+			})
+		}
 	}
 
 }
