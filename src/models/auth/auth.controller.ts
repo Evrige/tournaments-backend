@@ -109,12 +109,12 @@ export class AuthController {
 	): void {
 		res.cookie("accessToken", accessToken, {
 			httpOnly: true,
-			secure: false,
+			secure: true,
 			expires: new Date(Date.now() + 1 * 30 * 60 * 1000),
 		});
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: false,
+			secure: true,
 			expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 			,
 		});
