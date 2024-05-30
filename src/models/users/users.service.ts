@@ -142,12 +142,11 @@ export class UsersService {
     };
   }
 
-  async updateData(user: User) {
+  async updateData(userId: number, user: User) {
     try {
-      const { id, ...userData } = user;
       await this.prisma.user.update({
-        where: { id },
-        data: userData
+        where: { id: userId },
+        data: user
       });
       return { message: "User update" };
     } catch (error) {

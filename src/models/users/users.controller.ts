@@ -4,8 +4,8 @@ import {
 	Get, Param,
 	Post,
 	Put,
-	Req, Sse,
-	UseGuards
+	Req, Sse, UploadedFile, UploadedFiles,
+	UseGuards, UseInterceptors
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -18,6 +18,10 @@ import { BanUserDto } from "./dto/ban-user.dto";
 import { RoleName, User } from "@prisma/client";
 import { AuthGuard } from "@nestjs/passport";
 import { interval, map, Observable, switchMap } from "rxjs";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { v4 as uuid } from "uuid";
+import { CreateGameDto } from "../game/dto/create-game.dto";
 
 @ApiTags("user")
 @Controller("user")
@@ -130,9 +134,33 @@ export class UsersController {
 	@ApiResponse({ status: 200, type: String })
 	@UseGuards(AuthGuard("jwt"))
 	@Put("/updateData")
-	updateData(@Body() userData: User, @Req() request: any) {
-		if(request.user.id === userData.id)
-			return this.usersService.updateData(userData);
+	@UseInterceptors(
+		FileInterceptor(
+			"avatar",
+			{
+				storage: diskStorage({
+					destination: "./uploads",
+					filename: (req, file, cb) => {
+						const uniqueFileName = `${uuid()}-${file.originalname}`;
+						cb(null, uniqueFileName);
+					},
+				}),
+			},
+		),
+	)
+	async uploadFile(
+		@UploadedFile() avatar: Express.Multer.File,
+		@Body() userDto: User,
+		@Req() request: any
+	) {
+		console.log(userDto);
+		const avatarFile = avatar ? avatar : null;
+		const userData = {
+			...userDto,
+			avatar: avatarFile ? avatarFile.path : null,
+		};
+
+		return await this.usersService.updateData(request.user.id, userData);
 	}
 }
 export interface MessageEvent {
