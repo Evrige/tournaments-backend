@@ -50,6 +50,7 @@ export class UsersController {
 	@UseGuards(AuthGuard("jwt"))
 	@Get("/getData")
 	getData(@Req() request: any) {
+		console.log("update");
 		return this.usersService.findUserByid(request.user.id);
 	}
 

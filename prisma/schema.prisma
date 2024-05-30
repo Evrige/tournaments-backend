@@ -46,7 +46,7 @@ model User {
   name      String?
   lastname  String?
   nickname  String?   @unique
-  dateBirth DateTime? @map("date_birth")
+  dateBirth DateTime? @map("date_birth") @db.Timestamptz(6)
   email     String    @unique
   password  String
   avatar    String?   @default("uploads/default-profile-logo.png")
