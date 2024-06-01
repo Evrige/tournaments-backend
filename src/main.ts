@@ -35,7 +35,7 @@ async function bootstrap() {
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type, Authorization, Access-Control-Allow-Methods',
   });
 
   await app.listen(PORT, () => {
