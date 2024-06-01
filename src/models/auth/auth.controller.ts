@@ -109,13 +109,13 @@ export class AuthController {
 	): void {
 		res.cookie("accessToken", accessToken, {
 			httpOnly: true,
-			secure: false,
+			secure: process.env.NODE_ENV === 'production',
 			expires: new Date(Date.now() + 1 * 30 * 60 * 1000),
 			sameSite: false
 		});
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: false,
+			secure: process.env.NODE_ENV === 'production',
 			expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 			sameSite: false
 		});
