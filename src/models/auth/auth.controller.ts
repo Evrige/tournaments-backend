@@ -111,13 +111,15 @@ export class AuthController {
 			httpOnly: true,
 			secure: true,
 			expires: new Date(Date.now() + 1 * 30 * 60 * 1000),
-			sameSite: false
+			sameSite: false,
+			path: "/"
 		});
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			secure: true,
 			expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-			sameSite: false
+			sameSite: false,
+			path: "/"
 		});
 	}
 }
