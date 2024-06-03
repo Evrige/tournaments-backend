@@ -32,7 +32,7 @@ export class GeneratorService {
 		//
 		//
 		// const arens = []
-		// for (let i = 0; i < 10; i++) {
+		// for (let i = 0; i < 30; i++) {
 		// 	arens.push({
 		//     name: `${faker.address.city()} arena`,
 		// 		capacity: faker.random.number({min: 2000, max: 10000, precision: 1000}),
@@ -60,17 +60,17 @@ export class GeneratorService {
 
 
 		// const tournaments = []
-		// for (let i = 0; i < 20; i++) {
+		// for (let i = 0; i < 10; i++) {
 		// 	tournaments.push({
 		// 		name: faker.name.title(),
 		// 		prizePool: faker.random.number({min: 100, max: 10000, precision: 50}),
-		// 		type: faker.random.arrayElement(["OFFLINE", "ONLINE"]),
+		// 		type: faker.random.arrayElement(["OFFLINE"]),
 		// 		teamCount: faker.random.arrayElement([8, 16, 32]),
 		// 		date: faker.date.future(),
 		// 		minRating: faker.random.arrayElement([0, 0, 0, 200, 350, 500, 750, 1000]),
 		// 		maxRating: faker.random.arrayElement([1500, 1700, 1900, 2000]),
-		// 		// arenaId: faker.random.number({min: 1, max: 10}),
-		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "ONGOING", "FINISHED", "FINISHED", "CANCELLED"]),
+		// 		arenaId: faker.random.number({min: 1, max: 10}),
+		// 		status: faker.random.arrayElement(["PLANNED", "PLANNED", "PLANNED", "PLANNED", "FINISHED", "FINISHED", "CANCELLED"]),
 		// 		format: faker.random.arrayElement([1, 5, 5, 5, 2]),
 		// 		gameId: faker.random.arrayElement([1, 2])
 		// 	})
@@ -81,28 +81,32 @@ export class GeneratorService {
 		//
 		//
 
-		// const users = []
-		// for (let i = 0; i < 5; i++) {
-		// 	users.push({
-		// 		name: faker.name.firstName(),
-		// 		lastname: faker.name.lastName(),
-		// 		nickname: faker.name.firstName(),
-		// 		email: faker.internet.email(),
-		//     password: faker.internet.password(),
-		// 		teamId: 7
-		// 	})
+
+		// for(let j = 14; j < 16; j++) {
+		// 	const users = []
+		// 	for (let i = 0; i < 5; i++) {
+		// 		users.push({
+		// 			name: faker.name.firstName(),
+		// 			lastname: faker.name.lastName(),
+		// 			nickname: faker.name.firstName(),
+		// 			email: faker.internet.email(),
+		// 			password: faker.internet.password(),
+		// 			teamId: j+1
+		// 		})
+		// 	}
+		// 	for (const user of users) {
+		// 		const userData = await this.prisma.user.create({
+		// 			data: user
+		// 		})
+		// 		await this.prisma.user_Rating.create({
+		// 			data: {
+		// 				userId: userData.id,
+		// 				points: 0
+		// 			}
+		// 		})
+		// 	}
 		// }
-		// for (const user of users) {
-		// 	const userData = await this.prisma.user.create({
-		// 		data: user
-		// 	})
-		// 	await this.prisma.user_Rating.create({
-		// 		data: {
-		// 			userId: userData.id,
-		// 			points: 0
-		// 		}
-		// 	})
-		// }
+
 
 		// const invites = []
 		// for (let i = 0; i < 5; i++) {
@@ -150,9 +154,9 @@ export class GeneratorService {
 		for (let i = 0; i < 8; i++) {
 			await this.prisma.teams_List.create({
 				data: {
-					teamId: i+4,
+					teamId: i + 6,
 					stage: 1,
-					tournamentId: 7,
+					tournamentId: 21,
 					placement: 8
 				}
 			})
