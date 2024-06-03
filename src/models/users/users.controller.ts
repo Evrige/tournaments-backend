@@ -154,7 +154,6 @@ export class UsersController {
 		@Body() userDto: User,
 		@Req() request: any
 	) {
-		console.log(userDto);
 		const avatarFile = avatar ? avatar : null;
 		const userData = {
 			...userDto,

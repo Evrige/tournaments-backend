@@ -33,7 +33,7 @@ async function bootstrap() {
   app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: ['http://localhost:3000', 'https://tournament-frontend-sable.vercel.app'],
-    credentials: true
+    credentials: true,
   });
 
   await app.listen(PORT, () => {
