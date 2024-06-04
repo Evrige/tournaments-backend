@@ -23,10 +23,8 @@ export class AuthService {
 			);
 		}
 
-		const hashPassword = await bcrypt.hash(User.password, 5);
 		const newUser = await this.usersService.createUser({
 			...User,
-			password: hashPassword,
 		});
 		return this.generateToken(newUser.id);
 	}
@@ -80,6 +78,8 @@ export class AuthService {
 			if (!user) {
 				return null;
 			}
+			console.log(password);
+			console.log(user.password);
 			const pass = await bcrypt.compare(password, user.password);
 			if (pass) {
 				return user;

@@ -14,6 +14,5 @@ export class CreateUserDto {
 
   @ApiProperty({required: true})
   @IsString({message: ErrorMessage.STRING})
-  @Length(6, 16, {message: ErrorMessage.PASSWORD})
   password: string;
 }
