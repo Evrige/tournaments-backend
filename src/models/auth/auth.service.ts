@@ -4,12 +4,17 @@ import { JwtService } from "@nestjs/jwt";
 import { UserDto } from "../users/dto/user.dto";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "../users/dto/create-user.dto";
+import { PrismaService } from "../../prisma.service";
+import { RoleName } from "@prisma/client";
+import { RoleService } from "../role/role.service";
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private usersService: UsersService,
 		private jwtService: JwtService,
+		private prisma: PrismaService,
+		private roleService: RoleService
 	) {}
 
 	async registration(
@@ -51,6 +56,53 @@ export class AuthService {
 			);
 		}
 	}
+	async googleLogin(req): Promise<{ user: any; accessToken: string; refreshToken: string }> {
+		if (!req.user) {
+			throw new HttpException(
+				"No data",
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+		const user = await this.prisma.user.findUnique({
+			where: {
+        email: req.user.email
+      }
+		})
+		if (!user) {
+			const newUser = await this.prisma.user.create({
+				data: {
+					email: req.user.email,
+					name: req.user.name,
+					lastname: req.user.lastname,
+					avatar: req.user.avatar,
+					nickname: `Player${req.user.name}`,
+				}
+			});
+			const createdUser = await this.prisma.user.update({
+				where: {
+          id: newUser.id
+        },
+        data: {
+         nickname: `Player${newUser.id}`
+        }
+			})
+			const role = await this.roleService.getRoleByValue(RoleName.USER);
+			await this.prisma.user_Role.create({
+				data: {
+					user: { connect: { id: createdUser.id } },
+					role: { connect: { id: role.id } }
+				}
+			});
+			await this.prisma.user_Rating.create({
+				data: {
+					userId: createdUser.id,
+					points: 0
+				}
+			});
+			if (createdUser) return this.generateToken(createdUser.id);
+		}
+		return this.generateToken(user.id);
+	}
 
 	async refreshTokens(
 		refreshToken: string,
@@ -78,8 +130,6 @@ export class AuthService {
 			if (!user) {
 				return null;
 			}
-			console.log(password);
-			console.log(user.password);
 			const pass = await bcrypt.compare(password, user.password);
 			if (pass) {
 				return user;

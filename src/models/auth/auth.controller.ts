@@ -16,6 +16,8 @@ import { LocalAuthGuard } from "./local-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Request, Response } from "express";
 import { LoginDto } from "./dto/login.dto";
+import { GoogleOauthGuard } from "./google-oauth.guard";
+import * as process from "node:process";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -64,6 +66,18 @@ export class AuthController {
 			user,
 			message: "Login success",
 		};
+	}
+
+	@Get("google")
+	@UseGuards(GoogleOauthGuard)
+	async googleAuth(@Req() req) {}
+
+	@Get('google/callback')
+	@UseGuards(GoogleOauthGuard)
+	async googleAuthRedirect(@Req() req, @Res() res: Response) {
+		const { user, accessToken, refreshToken } = await this.authService.googleLogin(req)
+		this.setCookies(res, accessToken, refreshToken);
+		 res.redirect(process.env.CLIENT_URL);
 	}
 
 	@ApiOperation({ summary: "Refresh tokens" })

@@ -21,6 +21,7 @@ import { GameModule } from './models/game/game.module';
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from 'path';
+import { MailerModule } from './models/mailer/mailer.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,6 +46,7 @@ import { join } from 'path';
     GeneratorModule,
     SocketModule,
     GameModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [

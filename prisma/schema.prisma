@@ -48,7 +48,7 @@ model User {
   nickname  String?   @unique
   dateBirth DateTime? @map("date_birth") @db.Timestamptz(6)
   email     String    @unique
-  password  String
+  password  String?
   avatar    String?   @default("uploads/default-profile-logo.png")
   isBanned  Boolean?  @map("is_banned")
   banReason String?   @map("ban_reason")
