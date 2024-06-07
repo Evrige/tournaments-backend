@@ -1,8 +1,8 @@
 import {
 	Body,
 	Controller,
-	Get,
-	Post,
+	Get, Param,
+	Post, Put,
 	Req,
 	Res,
 	UseGuards,
@@ -34,10 +34,16 @@ export class AuthController {
 		@Body() createUserDto: CreateUserDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
-		const { user, accessToken, refreshToken } =
-			await this.authService.registration(createUserDto);
-		this.setCookies(res, accessToken, refreshToken);
-		return { user, message: "Registration success" };
+		return	await this.authService.registration(createUserDto);
+	}
+
+	@ApiOperation({ summary: "Activate email" })
+	@ApiResponse({ status: 201, description: "Email activated" })
+	@Put("/confirmEmail/:token")
+	async confirmEmail(
+		@Param() params: any,
+	) {
+		return	await this.authService.confirmEmail(params.token);
 	}
 
 	@ApiOperation({ summary: "Logout" })

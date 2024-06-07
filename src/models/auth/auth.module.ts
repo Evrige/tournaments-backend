@@ -21,7 +21,6 @@ import { MailerService } from "../mailer/mailer.service";
 				expiresIn: process.env.JWT_EXPIRES_IN,
 			},
 		}),
-		MailerModule,
 		PassportModule,
 		UsersModule,
 	],
@@ -31,11 +30,10 @@ import { MailerService } from "../mailer/mailer.service";
 		UsersService,
 		PrismaService,
 		RoleService,
-		MailerService,
 		LocalStrategy,
 		JwtStrategy,
 		GoogleStrategy,
 	],
-	exports: [AuthService, MailerService],
+	exports: [AuthService],
 })
 export class AuthModule {}
