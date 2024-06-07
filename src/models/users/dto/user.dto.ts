@@ -1,6 +1,7 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsBoolean, IsEmail, IsFQDN, IsInt, IsString, Length} from "class-validator";
 import {ErrorMessage} from "../../../exceptions/types.exceptions";
+import { UserStatus } from "@prisma/client";
 
 export class UserDto {
 	@ApiProperty({example: "1", description: "User id"})
@@ -37,9 +38,9 @@ export class UserDto {
 	@IsFQDN({}, {message: ErrorMessage.LINK})
 	avatar?: string;
 
-	@ApiProperty({example: "false", description: "User is banned?"})
-	@IsBoolean({message: ErrorMessage.BOOL})
-	isBanned?: boolean;
+	@ApiProperty({example: "PENDING", description: "User status"})
+	@IsBoolean({message: ErrorMessage.STRING})
+	status?: UserStatus;
 
 	@ApiProperty({example: "using cheats", description: "Reason for ban"})
 	@IsString({message: ErrorMessage.STRING})

@@ -10,6 +10,8 @@ import { LocalStrategy } from "./local.strategy";
 import { UsersModule } from "../users/users.module";
 import { JwtStrategy } from "./jwt.strategy";
 import { GoogleStrategy } from "./google-oauth.strategy";
+import { MailerModule } from "../mailer/mailer.module";
+import { MailerService } from "../mailer/mailer.service";
 
 @Module({
 	imports: [
@@ -19,6 +21,7 @@ import { GoogleStrategy } from "./google-oauth.strategy";
 				expiresIn: process.env.JWT_EXPIRES_IN,
 			},
 		}),
+		MailerModule,
 		PassportModule,
 		UsersModule,
 	],
@@ -28,10 +31,11 @@ import { GoogleStrategy } from "./google-oauth.strategy";
 		UsersService,
 		PrismaService,
 		RoleService,
+		MailerService,
 		LocalStrategy,
 		JwtStrategy,
-		GoogleStrategy
+		GoogleStrategy,
 	],
-	exports: [AuthService]
+	exports: [AuthService, MailerService],
 })
 export class AuthModule {}

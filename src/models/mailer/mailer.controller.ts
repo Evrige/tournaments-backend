@@ -1,6 +1,6 @@
 import { Controller, Post } from "@nestjs/common";
-import { MailerService } from './mailer.service';
-import { MailDto } from "./dto/mail.dto";
+import { MailerService } from "./mailer.service";
+import { confirmEmail } from "../../utils/confirm-email";
 
 @Controller('mailer')
 export class MailerController {
@@ -9,24 +9,6 @@ export class MailerController {
 
   @Post('send-email')
   async sendMail(){
-    const dto: MailDto = {
-      from: {
-        name: "MTG",
-        address: "mt.game.tournaments@gmail.com"
-      },
-      recipients: [
-        {
-          name: "Test",
-          address: "evrige.game@gmail.com"
-        }
-      ],
-      subject: "Test subject",
-      text: "Test text",
-      html: "<h1>Test html</h1>",
-      placeholderReplacement: {
-        name: "Test placeholder"
-      }
-    }
-    return await this.mailerService.sendMail(dto)
+    return await this.mailerService.sendMail(confirmEmail("evrige.game@gmail.com", "dfdsf"))
   }
 }

@@ -7,6 +7,8 @@ import { CreateUserDto } from "../users/dto/create-user.dto";
 import { PrismaService } from "../../prisma.service";
 import { RoleName } from "@prisma/client";
 import { RoleService } from "../role/role.service";
+import { MailerService } from "../mailer/mailer.service";
+import { confirmEmail } from "../../utils/confirm-email";
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,8 @@ export class AuthService {
 		private usersService: UsersService,
 		private jwtService: JwtService,
 		private prisma: PrismaService,
-		private roleService: RoleService
+		private roleService: RoleService,
+		private mailerService: MailerService
 	) {}
 
 	async registration(
@@ -27,10 +30,11 @@ export class AuthService {
 				HttpStatus.BAD_REQUEST,
 			);
 		}
-
+		// await this.mailerService.sendMail(confirmEmail("evrige.game@gmail.com", "dfdsf"))
 		const newUser = await this.usersService.createUser({
 			...User,
 		});
+
 		return this.generateToken(newUser.id);
 	}
 

@@ -42,18 +42,18 @@ model User_Game {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String?
   lastname  String?
-  nickname  String?   @unique
-  dateBirth DateTime? @map("date_birth") @db.Timestamptz(6)
-  email     String    @unique
+  nickname  String?     @unique
+  dateBirth DateTime?   @map("date_birth") @db.Timestamptz(6)
+  email     String      @unique
   password  String?
-  avatar    String?   @default("uploads/default-profile-logo.png")
-  isBanned  Boolean?  @map("is_banned")
-  banReason String?   @map("ban_reason")
-  createdAt DateTime  @default(now()) @map("created_at")
-  teamId    Int?      @map("team_id")
+  avatar    String?     @default("uploads/default-profile-logo.png")
+  status    UserStatus?
+  banReason String?     @map("ban_reason")
+  createdAt DateTime    @default(now()) @map("created_at")
+  teamId    Int?        @map("team_id")
 
   roles        User_Role[]
   game         User_Game[]
@@ -62,6 +62,12 @@ model User {
   team         Team?          @relation(fields: [teamId], references: [id])
   Analysis     Analysis[]
   User_Invites User_Invites[]
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BANNED
 }
 
 model User_Role {
