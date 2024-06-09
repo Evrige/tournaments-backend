@@ -105,13 +105,6 @@ export class UsersService {
 			where: { name: RoleName.MANAGER },
 		});
 
-		if (!managerRole) {
-			throw new HttpException(
-				{ message: "Manager role not found" },
-				HttpStatus.INTERNAL_SERVER_ERROR,
-			);
-		}
-
 		const result = await this.prisma.$transaction(async prisma => {
 			await prisma.user_Role.deleteMany({
 				where: {
@@ -149,11 +142,11 @@ export class UsersService {
 
 	async updateData(userId: number, user: User) {
 		try {
-			await this.prisma.user.update({
+			const userData = await this.prisma.user.update({
 				where: { id: userId },
 				data: user,
 			});
-			return { message: "User update" };
+			return { user: userData, message: "User update" };
 		} catch (error) {
 			throw new Error(`Failed to update user: ${error.message}`);
 		}

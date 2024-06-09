@@ -71,7 +71,7 @@ export class AuthService {
       },
 		});
 
-		return { message: "Account activated" }
+		return { message: "Account activated", email: updateUser.email }
 	}
 
 	async generateToken(

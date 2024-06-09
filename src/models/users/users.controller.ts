@@ -1,11 +1,15 @@
 import {
 	Body,
 	Controller,
-	Get, Param,
+	Get,
+	Param,
 	Post,
 	Put,
-	Req, Sse, UploadedFile, UploadedFiles,
-	UseGuards, UseInterceptors
+	Req,
+	Sse,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -17,11 +21,10 @@ import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { RoleName, User } from "@prisma/client";
 import { AuthGuard } from "@nestjs/passport";
-import { interval, map, Observable, switchMap } from "rxjs";
-import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { interval, Observable, switchMap } from "rxjs";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuid } from "uuid";
-import { CreateGameDto } from "../game/dto/create-game.dto";
 
 @ApiTags("user")
 @Controller("user")
@@ -50,7 +53,6 @@ export class UsersController {
 	@UseGuards(AuthGuard("jwt"))
 	@Get("/getData")
 	getData(@Req() request: any) {
-		console.log("update");
 		return this.usersService.findUserByid(request.user.id);
 	}
 
