@@ -1,29 +1,26 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Put,
-  Req,
-  UseInterceptors, UploadedFiles, UploadedFile,
+	Body,
+	Controller,
+	Get,
+	Post,
+	Put,
+	Req,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
 } from "@nestjs/common";
-import { TeamService } from './team.service';
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateTeamDto} from "./dto/create-team.dto";
-import {Role} from "../auth/role.decorator";
-import {RoleName} from "@prisma/client";
-import {RoleGuard} from "../auth/role.guard";
+import { TeamService } from "./team.service";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CreateTeamDto } from "./dto/create-team.dto";
+import { Role } from "../auth/role.decorator";
+import { RoleName } from "@prisma/client";
+import { RoleGuard } from "../auth/role.guard";
 import { CreateInvitesDto } from "./dto/create-invites.dto";
 import { InviteResponseDto } from "./dto/invite-response.dto";
-import {AuthGuard} from "@nestjs/passport";
-import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
+import { AuthGuard } from "@nestjs/passport";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuid } from "uuid";
-import { CreateGameDto } from "../game/dto/create-game.dto";
 
 @ApiTags("Team")
 @Controller('team')

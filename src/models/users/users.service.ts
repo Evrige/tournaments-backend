@@ -104,24 +104,31 @@ export class UsersService {
 		const managerRole = await this.prisma.role.findFirst({
 			where: { name: RoleName.MANAGER },
 		});
+		try {
+			await this.prisma.$transaction(async prisma => {
+				await prisma.user_Role.deleteMany({
+					where: {
+						userId: user.id,
+						roleId: managerRole.id,
+					},
+				});
 
-		const result = await this.prisma.$transaction(async prisma => {
-			await prisma.user_Role.deleteMany({
-				where: {
-					userId: user.id,
-					roleId: managerRole.id,
-				},
+				await prisma.user.update({
+					where: { id: user.id },
+					data: { teamId: null },
+				});
 			});
-
-			await prisma.user.update({
-				where: { id: user.id },
-				data: { teamId: null },
-			});
-
-			return { message: "Leave team success" };
-		});
-
-		return { statusCode: HttpStatus.OK, ...result };
+			return {
+				status: HttpStatus.OK,
+				message: "Leave team success",
+			};
+		}
+		catch (error) {
+			throw new HttpException(
+        { message: "Error leave team: ", error },
+        HttpStatus.BAD_REQUEST,
+      );
+		}
 	}
 
 	async getInvites(userId: number) {
@@ -142,13 +149,17 @@ export class UsersService {
 
 	async updateData(userId: number, user: User) {
 		try {
-			const userData = await this.prisma.user.update({
+			const {password, ...userData} = await this.prisma.user.update({
 				where: { id: userId },
 				data: user,
 			});
-			return { user: userData, message: "User update" };
+			return {
+				status: HttpStatus.OK,
+				message: "User update successful",
+				user: userData
+			};
 		} catch (error) {
-			throw new Error(`Failed to update user: ${error.message}`);
+			throw new HttpException("Failed to update user", HttpStatus.BAD_REQUEST);
 		}
 	}
 

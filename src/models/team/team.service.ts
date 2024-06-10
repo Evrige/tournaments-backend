@@ -42,7 +42,10 @@ export class TeamService {
 			userId: userId,
       value: RoleName.MANAGER
 		})
-		return {message: "ok"}
+		return {
+			status: HttpStatus.OK,
+			message: "Team created",
+		};
 	}
 
 	async deleteTeam(id: number) {
@@ -52,12 +55,18 @@ export class TeamService {
 			}
 		});
 		return {
-
+			status: HttpStatus.OK,
 			message: "Team deleted successfully"
 		}
 	}
 
 	async getTeamUsers(id: number) {
+		if(!id) {
+			throw new HttpException(
+				{ message: "User are not in team" },
+				HttpStatus.BAD_REQUEST,
+			);
+		}
 		const users = await this.prisma.user.findMany({
 			where: {
 				teamId: id
@@ -85,8 +94,9 @@ export class TeamService {
 			}
 		});
 		return {
-      message: "ok"
-    }
+			status: HttpStatus.OK,
+			message: "invite successfully",
+		};
 	}
 
 	async inviteResponse(InviteResponseDto: InviteResponseDto, userId: number) {
