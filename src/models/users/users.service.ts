@@ -123,6 +123,7 @@ export class UsersService {
 				message: "Leave team success",
 			};
 		}
+
 		catch (error) {
 			throw new HttpException(
         { message: "Error leave team: ", error },
