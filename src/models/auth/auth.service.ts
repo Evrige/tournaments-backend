@@ -13,6 +13,7 @@ import Mail from "nodemailer/lib/mailer";
 import { mailForm } from "../../utils/mail-form";
 import { confirmEmailHtml } from "../../utils/confirm-email-html";
 import * as process from "node:process";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -95,6 +96,32 @@ export class AuthService {
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
+	}
+
+	async changePassword(passwords: ChangePasswordDto, userId: number): Promise<any> {
+			const user = await this.usersService.findUserByid(userId);
+			if (!user) {
+				return null;
+			}
+			const pass = await bcrypt.compare(passwords.currentPassword, user.password);
+			if (!pass) {
+				throw new HttpException(
+					"currentPassword - Uncorrected password",
+					HttpStatus.BAD_REQUEST,
+				);
+			}
+			await this.prisma.user.update({
+				where: {
+          id: user.id,
+        },
+        data: {
+          password: passwords.newPassword
+        },
+			})
+			return {
+				status: HttpStatus.OK,
+				message: "Password update",
+			}
 	}
 
 	async googleLogin(

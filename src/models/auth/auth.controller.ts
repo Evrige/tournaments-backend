@@ -18,6 +18,7 @@ import { Request, Response } from "express";
 import { LoginDto } from "./dto/login.dto";
 import { GoogleOauthGuard } from "./google-oauth.guard";
 import * as process from "node:process";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -47,13 +48,22 @@ export class AuthController {
 	}
 
 	@ApiOperation({ summary: "Logout" })
-	@ApiResponse({ status: 201, description: "Logout successfully" })
+	@ApiResponse({ status: 200, description: "Logout successfully" })
 	@UseGuards(JwtAuthGuard)
 	@Get("/logout")
 	async logout(@Res({ passthrough: true }) res: Response) {
 		res.clearCookie("accessToken");
 		res.clearCookie("refreshToken");
 		return { message: "Logout successfully" };
+	}
+
+	@ApiOperation({ summary: "Change password" })
+	@ApiResponse({ status: 200, description: "Change password successfully" })
+	@UseGuards(JwtAuthGuard)
+	@Put("/changePassword")
+	async changePassword(@Body() changePasswordDto: ChangePasswordDto,
+											 @Req() req,) {
+		return await this.authService.changePassword(changePasswordDto, req.user.id)
 	}
 
 	@ApiOperation({ summary: "Login" })
