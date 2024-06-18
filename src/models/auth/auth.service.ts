@@ -24,9 +24,7 @@ export class AuthService {
 		private roleService: RoleService,
 	) {}
 
-	async registration(
-		User: CreateUserDto,
-	) {
+	async registration(User: CreateUserDto) {
 		const user = await this.usersService.findUser(User.email);
 		if (user) {
 			throw new HttpException(
@@ -39,41 +37,49 @@ export class AuthService {
 		});
 		const token = this.jwtService.sign(
 			{ userId: newUser.id },
-			{ expiresIn: 60 * 60 * 24 },
+			{ expiresIn: 60 * 15  },
 		);
 		const confirmLink = `${process.env.CLIENT_URL}/confirmEmail?token=${token}`;
 		await this.sendMail(
-			mailForm(
-				newUser.email,
-				"Activated email",
-				confirmEmailHtml(confirmLink),
-			),
+			mailForm(newUser.email, "Activated email", confirmEmailHtml(confirmLink)),
 		);
-		return { message: "Account created" }
+		return { message: "Account created" };
 	}
 
-	async confirmEmail(
-		token: string,
-	) {
-		const verifyToken = await this.jwtService.verify(token)
-		if (!verifyToken) {
-			throw new HttpException(
-				"Token expired",
-				HttpStatus.BAD_REQUEST,
-			);
+	async confirmEmail(token: string) {
+		let verifyToken;
+		try {
+			verifyToken = await this.jwtService.verify(token);
+		} catch (error) {
+			throw new HttpException("Invalid or expired token", HttpStatus.BAD_REQUEST);
 		}
+
+		if (!verifyToken) {
+			throw new HttpException("Token expired", HttpStatus.BAD_REQUEST);
+		}
+
 		const user = await this.prisma.user.findUnique({
-      where: { id: verifyToken.userId },
-    });
+			where: { id: verifyToken.userId },
+		});
+
+		if (!user) {
+			throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+		}
+
 		const updateUser = await this.prisma.user.update({
 			where: { id: user.id },
 			data: {
-        status: UserStatus.ACTIVE,
-      },
+				status: UserStatus.ACTIVE,
+			},
 		});
 
-		return { message: "Account activated", email: updateUser.email }
+		return {
+			status: 200,
+			message: "Account activated",
+			email: updateUser.email,
+		};
 	}
+
 
 	async generateToken(
 		id: number,
@@ -98,30 +104,33 @@ export class AuthService {
 		}
 	}
 
-	async changePassword(passwords: ChangePasswordDto, userId: number): Promise<any> {
-			const user = await this.usersService.findUserByid(userId);
-			if (!user) {
-				return null;
-			}
-			const pass = await bcrypt.compare(passwords.currentPassword, user.password);
-			if (!pass) {
-				throw new HttpException(
-					"currentPassword - Uncorrected password",
-					HttpStatus.BAD_REQUEST,
-				);
-			}
-			await this.prisma.user.update({
-				where: {
-          id: user.id,
-        },
-        data: {
-          password: passwords.newPassword
-        },
-			})
-			return {
-				status: HttpStatus.OK,
-				message: "Password update",
-			}
+	async changePassword(
+		passwords: ChangePasswordDto,
+		userId: number,
+	): Promise<any> {
+		const user = await this.usersService.findUserByid(userId);
+		if (!user) {
+			return null;
+		}
+		const pass = await bcrypt.compare(passwords.currentPassword, user.password);
+		if (!pass) {
+			throw new HttpException(
+				"currentPassword - Uncorrected password",
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		await this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				password: passwords.newPassword,
+			},
+		});
+		return {
+			status: HttpStatus.OK,
+			message: "Password update",
+		};
 	}
 
 	async googleLogin(
@@ -199,7 +208,11 @@ export class AuthService {
 			if (!user) {
 				return null;
 			}
-			if (user.status === UserStatus.PENDING) throw new HttpException("Activate email first", HttpStatus.UNAUTHORIZED);
+			if (user.status === UserStatus.PENDING)
+				throw new HttpException(
+					"Activate email first",
+					HttpStatus.UNAUTHORIZED,
+				);
 			const pass = await bcrypt.compare(password, user.password);
 			if (pass) {
 				return user;
