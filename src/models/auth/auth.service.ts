@@ -35,15 +35,13 @@ export class AuthService {
 		const newUser = await this.usersService.createUser({
 			...User,
 		});
-		const token = this.jwtService.sign(
-			{ userId: newUser.id },
-			{ expiresIn: 60 * 15  },
-		);
-		const confirmLink = `${process.env.CLIENT_URL}/confirmEmail?token=${token}`;
-		await this.sendMail(
-			mailForm(newUser.email, "Activated email", confirmEmailHtml(confirmLink)),
-		);
+		await this.sendEmailToActivated(newUser.email);
 		return { message: "Account created" };
+	}
+
+	async reSendEmailToActivated(email: string) {
+		await this.sendEmailToActivated(email);
+		return { message: "Mail send", status: 200 };
 	}
 
 	async confirmEmail(token: string) {
@@ -51,7 +49,10 @@ export class AuthService {
 		try {
 			verifyToken = await this.jwtService.verify(token);
 		} catch (error) {
-			throw new HttpException("Invalid or expired token", HttpStatus.BAD_REQUEST);
+			throw new HttpException(
+				"Invalid or expired token",
+				HttpStatus.BAD_REQUEST,
+			);
 		}
 
 		if (!verifyToken) {
@@ -79,7 +80,6 @@ export class AuthService {
 			email: updateUser.email,
 		};
 	}
-
 
 	async generateToken(
 		id: number,
@@ -203,27 +203,28 @@ export class AuthService {
 	}
 
 	async validateUser(email: string, password: string): Promise<any> {
-		try {
-			const user = await this.usersService.findUser(email);
-			if (!user) {
-				return null;
-			}
-			if (user.status === UserStatus.PENDING)
-				throw new HttpException(
-					"Activate email first",
-					HttpStatus.UNAUTHORIZED,
-				);
-			const pass = await bcrypt.compare(password, user.password);
-			if (pass) {
-				return user;
-			}
+		const user = await this.usersService.findUser(email);
+		if (!user) {
 			return null;
-		} catch (error) {
+		}
+		if (user.status === UserStatus.PENDING)
+			throw new HttpException("Activate email first", HttpStatus.UNAUTHORIZED);
+		const pass = await bcrypt.compare(password, user.password);
+		if (pass) {
+			return user;
+		} else
 			throw new HttpException(
 				"User validation failed",
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
-		}
+	}
+
+	async sendEmailToActivated(email: string) {
+		const token = this.jwtService.sign({ email }, { expiresIn: 60 * 15 });
+		const confirmLink = `${process.env.CLIENT_URL}/confirmEmail?token=${token}`;
+		await this.sendMail(
+			mailForm(email, "Activated email", confirmEmailHtml(confirmLink)),
+		);
 	}
 
 	mailTransport() {

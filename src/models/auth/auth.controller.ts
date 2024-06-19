@@ -47,6 +47,15 @@ export class AuthController {
 		return	await this.authService.confirmEmail(params.token);
 	}
 
+	@ApiOperation({ summary: "Re send email to activated" })
+	@ApiResponse({ status: 200, description: "Mail send" })
+	@Put("/reSendEmailToActivated")
+	async reSendEmailToActivated(
+		@Body() email: string,
+	) {
+		return	await this.authService.reSendEmailToActivated(email);
+	}
+
 	@ApiOperation({ summary: "Logout" })
 	@ApiResponse({ status: 200, description: "Logout successfully" })
 	@UseGuards(JwtAuthGuard)
