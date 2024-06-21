@@ -59,9 +59,7 @@ export class AuthService {
 			throw new HttpException("Token expired", HttpStatus.BAD_REQUEST);
 		}
 
-		const user = await this.prisma.user.findUnique({
-			where: { id: verifyToken.userId },
-		});
+		const user = await this.usersService.findUser(verifyToken.email)
 
 		if (!user) {
 			throw new HttpException("User not found", HttpStatus.NOT_FOUND);

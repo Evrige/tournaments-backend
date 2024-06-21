@@ -19,6 +19,7 @@ import { LoginDto } from "./dto/login.dto";
 import { GoogleOauthGuard } from "./google-oauth.guard";
 import * as process from "node:process";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { SendEmailDto } from "./dto/send-email.dto";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -48,12 +49,10 @@ export class AuthController {
 	}
 
 	@ApiOperation({ summary: "Re send email to activated" })
-	@ApiResponse({ status: 200, description: "Mail send" })
+	@ApiResponse({ status: 201, description: "Mail send" })
 	@Put("/reSendEmailToActivated")
-	async reSendEmailToActivated(
-		@Body() email: string,
-	) {
-		return	await this.authService.reSendEmailToActivated(email);
+	async reSendEmailToActivated(@Body() SendEmailDto: SendEmailDto,) {
+		return	await this.authService.reSendEmailToActivated(SendEmailDto.email);
 	}
 
 	@ApiOperation({ summary: "Logout" })
@@ -90,6 +89,7 @@ export class AuthController {
 		return {
 			user,
 			message: "Login success",
+			status: 200
 		};
 	}
 
