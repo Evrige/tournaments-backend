@@ -82,7 +82,7 @@ export class AuthService {
 	async generateToken(
 		id: number,
 	): Promise<{ user: any; accessToken: string; refreshToken: string }> {
-		const { password, ...userData } = await this.usersService.findUserByid(id);
+		const userData = await this.usersService.findUserByid(id);
 		try {
 			const accessToken = this.jwtService.sign({
 				nickname: userData.nickname,
@@ -106,7 +106,7 @@ export class AuthService {
 		passwords: ChangePasswordDto,
 		userId: number,
 	): Promise<any> {
-		const user = await this.usersService.findUserByid(userId);
+		const user = await this.prisma.user.findUnique({where: {id: userId}});
 		if (!user) {
 			return null;
 		}

@@ -35,8 +35,8 @@ export class UsersService {
 		return await this.findUser(user.email);
 	}
 
-	async getAllUsers() {
-		return await this.prisma.user.findMany({ include: { roles: true } });
+	async getAllUsersById() {
+		return await this.prisma.user.findMany({select: {id: true}});
 	}
 
 	async addRole(addRoleDto: AddRoleDto) {
@@ -180,7 +180,7 @@ export class UsersService {
 	}
 
 	async findUserByid(userId: number) {
-		return this.prisma.user.findUnique({
+		const user = await this.prisma.user.findUnique({
 			where: {
 				id: userId,
 			},
@@ -193,7 +193,15 @@ export class UsersService {
 				team: true,
 			},
 		});
+
+		if (!user) {
+			return null;
+		}
+
+		const { password, ...userWithoutPassword } = user;
+		return userWithoutPassword;
 	}
+
 
 	async findUsersByNickname(query: string) {
 		const users = await this.prisma.user.findMany({

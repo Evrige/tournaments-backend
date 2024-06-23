@@ -59,6 +59,8 @@ model User {
   game         User_Game[]
   ratings      User_Rating[]
   result       Result[]
+  chats        Chat_User[]
+  messages     Message[]
   team         Team?          @relation(fields: [teamId], references: [id])
   Analysis     Analysis[]
   User_Invites User_Invites[]
@@ -242,4 +244,39 @@ model Analysis {
 
   match Match @relation(fields: [matchId], references: [id])
   user  User  @relation(fields: [userId], references: [id])
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  isGroup   Boolean
+  groupName String?  @map("group_name")
+
+  users    Chat_User[]
+  messages Message[]
+}
+
+model Chat_User {
+  id     Int @id @default(autoincrement())
+  userId Int
+  chatId Int
+
+  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id])
+
+  @@unique([userId, chatId])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String?
+  imageUrl  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    Int
+  chatId    Int
+
+  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id])
 }

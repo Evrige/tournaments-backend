@@ -45,8 +45,8 @@ export class UsersController {
 	// @Role([RoleName.ADMIN])
 	// @UseGuards(RoleGuard)
 	@Get()
-	getAllUsers() {
-		return this.usersService.getAllUsers();
+	getAllUsersById() {
+		return this.usersService.getAllUsersById();
 	}
 	@ApiOperation({ summary: "Get user data" })
 	@ApiResponse({ status: 200, type: [UserDto] })
@@ -63,6 +63,13 @@ export class UsersController {
 		return this.usersService.findUsersByNickname(params.nickname);
 	}
 
+	@ApiOperation({ summary: "Find user" })
+	@ApiResponse({ status: 200, type: String })
+	@Get("/getUserById/:id")
+	async findUsersById(@Param() params: any) {
+		return this.usersService.findUserByid(+params.id);
+	}
+
 	@ApiOperation({ summary: "SSE" })
 	@ApiResponse({ status: 200, type: String })
 	@UseGuards(AuthGuard("jwt"))
@@ -70,7 +77,7 @@ export class UsersController {
 	async sse(@Req() request: any): Promise<Observable<MessageEvent>> {
 		return interval(30000).pipe(
 			switchMap(async () => {
-				const {password, ...user} = await this.usersService.findUserByid(request.user.id);
+				const user = await this.usersService.findUserByid(request.user.id);
 				return { data: { user } };
 			})
 		);
