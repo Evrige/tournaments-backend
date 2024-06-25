@@ -55,15 +55,17 @@ model User {
   createdAt DateTime    @default(now()) @map("created_at")
   teamId    Int?        @map("team_id")
 
-  roles        User_Role[]
-  game         User_Game[]
-  ratings      User_Rating[]
-  result       Result[]
-  chats        Chat_User[]
-  messages     Message[]
-  team         Team?          @relation(fields: [teamId], references: [id])
-  Analysis     Analysis[]
-  User_Invites User_Invites[]
+  roles         User_Role[]
+  game          User_Game[]
+  ratings       User_Rating[]
+  result        Result[]
+  chats         Chat_User[]
+  messages      Message[]
+  userAsFriend1 Friendship[]   @relation("User1Relation")
+  userAsFriend2 Friendship[]   @relation("User2Relation")
+  team          Team?          @relation(fields: [teamId], references: [id])
+  Analysis      Analysis[]
+  User_Invites  User_Invites[]
 }
 
 enum UserStatus {
@@ -120,6 +122,22 @@ model User_Invites {
 }
 
 enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Friendship {
+  id      Int              @id @default(autoincrement())
+  user1Id Int?             @map("user1_id")
+  user2Id Int?             @map("user2_id")
+  status  FriendshipStatus
+
+  user1 User? @relation("User1Relation", fields: [user1Id], references: [id])
+  user2 User? @relation("User2Relation", fields: [user2Id], references: [id])
+}
+
+enum FriendshipStatus {
   PENDING
   ACCEPTED
   DECLINED
