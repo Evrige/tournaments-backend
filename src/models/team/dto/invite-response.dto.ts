@@ -11,4 +11,8 @@ export class InviteResponseDto {
   @ApiProperty({required: true})
   @IsString({message: ErrorMessage.STRING})
   readonly status: InviteStatus;
+
+  @ApiProperty({required: true})
+  @IsString({message: ErrorMessage.STRING})
+  readonly type: string;
 }

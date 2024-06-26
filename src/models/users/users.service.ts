@@ -133,7 +133,7 @@ export class UsersService {
 	}
 
 	async getInvites(userId: number) {
-		const invites = await this.prisma.user_Invites.findMany({
+		const teamInvites = await this.prisma.user_Invites.findMany({
 			where: {
 				userId,
 				status: InviteStatus.PENDING,
@@ -142,8 +142,23 @@ export class UsersService {
 				team: true,
 			},
 		});
+		const friendInvites = await this.prisma.friendship.findMany({
+			where: {
+				user2Id: userId,
+				status: InviteStatus.PENDING,
+			},
+			include: {
+				user1: {
+					select: {
+            id: true,
+           	nickname: true
+          },
+				},
+			}
+		});
 		return {
-			invites,
+			teamInvites,
+			friendInvites ,
 			message: "ok",
 		};
 	}

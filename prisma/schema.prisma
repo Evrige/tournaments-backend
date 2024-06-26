@@ -111,12 +111,14 @@ model Team {
 }
 
 model User_Invites {
-  id     Int          @id @default(autoincrement())
-  user   User         @relation(fields: [userId], references: [id])
-  userId Int          @map("user_id")
-  teamId Int          @map("team_id")
-  team   Team         @relation(fields: [teamId], references: [id])
-  status InviteStatus
+  id        Int          @id @default(autoincrement())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    Int          @map("user_id")
+  teamId    Int          @map("team_id")
+  team      Team         @relation(fields: [teamId], references: [id])
+  status    InviteStatus
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
 
   @@unique([userId, teamId])
 }
@@ -128,10 +130,12 @@ enum InviteStatus {
 }
 
 model Friendship {
-  id      Int              @id @default(autoincrement())
-  user1Id Int?             @map("user1_id")
-  user2Id Int?             @map("user2_id")
-  status  FriendshipStatus
+  id        Int              @id @default(autoincrement())
+  user1Id   Int?             @map("user1_id")
+  user2Id   Int?             @map("user2_id")
+  status    FriendshipStatus
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
 
   user1 User? @relation("User1Relation", fields: [user1Id], references: [id])
   user2 User? @relation("User2Relation", fields: [user2Id], references: [id])

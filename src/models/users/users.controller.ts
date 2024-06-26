@@ -96,7 +96,6 @@ export class UsersController {
 		);
 	}
 
-
 	@ApiOperation({ summary: "Get user by email" })
 	@ApiResponse({ status: 200, type: [UserDto] })
 	@ApiParam({ name: "email", description: "user@gmail.com" })

@@ -104,38 +104,47 @@ export class TeamService {
 
 		if (!user) {
 			throw new HttpException({ message: "User not found" }, HttpStatus.NOT_FOUND);
-		} else if (user.teamId) {
+		} else if (user.teamId && InviteResponseDto.type === "team") {
 			throw new HttpException({ message: "You are already in a team" }, HttpStatus.BAD_REQUEST);
 		}
-
-		const response = await this.prisma.user_Invites.update({
-			where: { id: InviteResponseDto.id },
-			data: {
-				status: InviteResponseDto.status
-			}
-		});
-
-		if (response.status === InviteStatus.ACCEPTED) {
-			await this.prisma.user.update({
-				where: {
-					id: response.userId
-				},
+		if (InviteResponseDto.type === "team"){
+			const response = await this.prisma.user_Invites.update({
+				where: { id: InviteResponseDto.id },
 				data: {
-					teamId: response.teamId
+					status: InviteResponseDto.status
 				}
 			});
 
+			if (response.status === InviteStatus.ACCEPTED) {
+				await this.prisma.user.update({
+					where: {
+						id: response.userId
+					},
+					data: {
+						teamId: response.teamId
+					}
+				});
+				return {
+					statusCode: HttpStatus.OK,
+					message: "User added to team"
+				};
+			}
+		}
+		else if (InviteResponseDto.type === "friend"){
+			await this.prisma.friendship.update({
+				where: { id: InviteResponseDto.id },
+				data: {
+					status: InviteResponseDto.status
+				}
+			});
 			return {
 				statusCode: HttpStatus.OK,
-				message: "User added to team"
+				message: "User added to friend"
 			};
 		}
-
 		return {
 			statusCode: HttpStatus.OK,
 			message: "Invite response updated"
 		};
 	}
-
-
 }
